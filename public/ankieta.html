@@ -4,23 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Ankieta</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Epilogue:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #ffffff;
-  --bg2: #f7f7f5;
-  --bg3: #eeede9;
-  --line: #e0deda;
-  --muted: #a0998f;
-  --text: #1a1714;
-  --text2: #6b6560;
-  --accent: #1a1714;
-  --accent2: #333;
-  --red: #d64040;
-  --green: #2a7a52;
-  --sel-bg: #f0f8f4;
-  --sel-line: #2a7a52;
-  --r: 8px;
+  --bg2: #f5f5f5;
+  --bg3: #ebebeb;
+  --line: #d0d0d0;
+  --muted: #888888;
+  --text: #111111;
+  --text2: #444444;
+  --red: #c0392b;
+  --green: #1a5c35;
+  --sel-bg: #f0f5f0;
+  --sel-line: #1a5c35;
+  --r: 4px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -29,8 +27,9 @@ html, body {
   height: 100%;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Epilogue', sans-serif;
+  font-family: 'Inter', sans-serif;
   overscroll-behavior: none;
+  font-size: 15px;
 }
 
 /* ── SCREENS ── */
@@ -42,7 +41,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--line);
   background: var(--bg);
   position: sticky;
@@ -50,193 +49,168 @@ html, body {
   z-index: 10;
 }
 .topbar-logo {
-  font-family: 'Syne', sans-serif;
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text);
 }
 .topbar-count {
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   color: var(--muted);
-  letter-spacing: 0.05em;
 }
 .topbar-btn {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
   color: var(--text2);
   background: none;
   border: 1px solid var(--line);
-  padding: 7px 12px;
-  border-radius: 6px;
+  padding: 6px 12px;
+  border-radius: var(--r);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: border-color 0.1s, color 0.1s;
 }
 .topbar-btn:hover { border-color: var(--text); color: var(--text); }
 
 /* ── PROGRESS ── */
-.progress-wrap {
-  height: 3px;
-  background: var(--line);
-}
-.progress-bar {
-  height: 100%;
-  background: var(--text);
-  transition: width 0.35s ease;
-}
+.progress-wrap { height: 2px; background: var(--bg3); }
+.progress-bar { height: 100%; background: var(--text); transition: width 0.3s ease; }
 
 /* ── FORM CONTENT ── */
-.form-scroll {
-  flex: 1;
-  overflow-y: auto;
-  padding: 28px 20px 110px;
-}
+.form-scroll { flex: 1; overflow-y: auto; padding: 20px 16px 100px; }
 
-.q-block {
-  margin-bottom: 36px;
-  animation: fadeUp 0.2s ease both;
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+.q-block { margin-bottom: 28px; }
 .q-block.hidden { display: none; }
 
 .q-label {
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: var(--muted);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 .q-label .q-num {
   background: var(--bg3);
   border: 1px solid var(--line);
-  padding: 2px 7px;
-  border-radius: 3px;
+  padding: 1px 6px;
+  border-radius: 2px;
   font-size: 10px;
   color: var(--text2);
 }
 .q-label .req { color: var(--red); }
 .q-label .cond-tag {
-  color: #7a6200;
-  border: 1px solid #e8d88a;
-  background: #fffbeb;
-  padding: 1px 7px;
-  border-radius: 3px;
+  color: #6b5000;
+  border: 1px solid #d4b84a;
+  background: #fdf8e8;
+  padding: 1px 6px;
+  border-radius: 2px;
   font-size: 9px;
 }
 
 .q-text {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
-  line-height: 1.45;
-  margin-bottom: 16px;
+  line-height: 1.5;
+  margin-bottom: 12px;
   color: var(--text);
 }
 
 /* ── OPTIONS ── */
-.options { display: flex; flex-direction: column; gap: 8px; }
+.options { display: flex; flex-direction: column; gap: 6px; }
 
 .opt {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 15px 16px;
-  border: 1.5px solid var(--line);
+  gap: 12px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
   border-radius: var(--r);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: border-color 0.1s, background 0.1s;
   background: var(--bg);
-  font-size: 15px;
+  font-size: 14px;
   user-select: none;
 }
 .opt:active { background: var(--bg2); }
-.opt:hover { border-color: #c0bbb5; }
+.opt:hover { border-color: #aaaaaa; }
 .opt.selected { border-color: var(--sel-line); background: var(--sel-bg); }
 .opt.selected .opt-marker { background: var(--sel-line); border-color: var(--sel-line); color: white; }
 
 .opt-marker {
-  width: 22px;
-  height: 22px;
-  border: 1.5px solid var(--line);
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--line);
   border-radius: 50%;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  transition: all 0.15s;
+  font-size: 10px;
+  transition: all 0.1s;
   color: transparent;
 }
-.opt-marker.square { border-radius: 4px; }
+.opt-marker.square { border-radius: 2px; }
 .opt-label { flex: 1; }
 
 /* yesno */
-.yesno-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.yesno-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .yesno-btn {
-  padding: 20px 10px;
-  border: 1.5px solid var(--line);
+  padding: 16px 10px;
+  border: 1px solid var(--line);
   border-radius: var(--r);
   background: var(--bg);
   cursor: pointer;
   text-align: center;
-  font-family: 'Syne', sans-serif;
-  font-size: 18px;
-  font-weight: 800;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--text2);
-  transition: all 0.15s;
+  transition: all 0.1s;
   user-select: none;
-  letter-spacing: 0.03em;
 }
-.yesno-btn:hover { border-color: #c0bbb5; }
-.yesno-btn.yes.selected { border-color: var(--green); background: #f0faf5; color: var(--green); }
-.yesno-btn.no.selected { border-color: var(--red); background: #fdf2f2; color: var(--red); }
+.yesno-btn:hover { border-color: #aaaaaa; }
+.yesno-btn.yes.selected { border-color: var(--green); background: #eef4f0; color: var(--green); }
+.yesno-btn.no.selected { border-color: var(--red); background: #faeaea; color: var(--red); }
 
 /* scale */
-.scale-row { display: flex; gap: 8px; }
+.scale-row { display: flex; gap: 6px; }
 .scale-btn {
   flex: 1;
   aspect-ratio: 1;
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: var(--r);
   background: var(--bg);
   cursor: pointer;
-  font-family: 'DM Mono', monospace;
-  font-size: 17px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
   color: var(--text2);
-  transition: all 0.15s;
+  transition: all 0.1s;
   display: flex;
   align-items: center;
   justify-content: center;
   user-select: none;
 }
-.scale-btn:hover { border-color: #c0bbb5; color: var(--text); }
+.scale-btn:hover { border-color: #aaaaaa; color: var(--text); }
 .scale-btn.selected { border-color: var(--text); background: var(--text); color: white; }
-.scale-labels { display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 8px; text-transform: uppercase; letter-spacing: 0.07em; }
+.scale-labels { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 6px; }
 
 /* text */
 .q-textarea {
   width: 100%;
   background: var(--bg);
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: var(--r);
   color: var(--text);
-  font-family: 'Epilogue', sans-serif;
-  font-size: 15px;
-  padding: 14px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  padding: 10px 12px;
   resize: none;
-  min-height: 100px;
+  min-height: 90px;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.1s;
 }
 .q-textarea:focus { border-color: var(--text); }
 .q-textarea::placeholder { color: var(--muted); }
@@ -245,31 +219,28 @@ html, body {
 .bottom-bar {
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  padding: 14px 20px;
-  padding-bottom: max(14px, env(safe-area-inset-bottom));
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(8px);
+  padding: 12px 16px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  background: rgba(255,255,255,0.97);
   border-top: 1px solid var(--line);
   z-index: 10;
 }
 .submit-btn {
   width: 100%;
-  padding: 17px;
+  padding: 14px;
   background: var(--text);
   color: white;
   border: none;
   border-radius: var(--r);
-  font-family: 'Syne', sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
-  text-transform: uppercase;
+  transition: background 0.1s;
 }
-.submit-btn:hover { background: var(--accent2); }
-.submit-btn:active { transform: scale(0.99); }
-.submit-btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
+.submit-btn:hover { background: #333; }
+.submit-btn:active { background: #000; }
+.submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 /* ── THANK YOU SCREEN ── */
 #screen-thanks {
@@ -277,313 +248,279 @@ html, body {
   justify-content: center;
   text-align: center;
   padding: 40px 24px;
-  background: var(--bg);
 }
 .thanks-icon {
-  width: 72px;
-  height: 72px;
+  width: 56px;
+  height: 56px;
   background: var(--text);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
-  margin: 0 auto 24px;
-  animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
-}
-@keyframes pop {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  font-size: 24px;
+  color: white;
+  margin: 0 auto 20px;
 }
 .thanks-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 30px;
-  font-weight: 800;
+  font-size: 20px;
+  font-weight: 600;
   color: var(--text);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 .thanks-sub {
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 48px;
+  margin-bottom: 40px;
 }
 .next-btn {
   width: 100%;
   max-width: 360px;
-  padding: 19px;
+  padding: 14px;
   background: var(--text);
   color: white;
   border: none;
   border-radius: var(--r);
-  font-family: 'Syne', sans-serif;
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  text-transform: uppercase;
-  margin-bottom: 16px;
-  transition: all 0.15s;
+  margin-bottom: 12px;
+  transition: background 0.1s;
 }
-.next-btn:hover { background: var(--accent2); }
-.next-btn:active { transform: scale(0.98); }
-.stats-link {
-  display: block;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  color: var(--muted);
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  padding: 10px;
-  transition: color 0.15s;
-}
-.stats-link:hover { color: var(--text); }
+.next-btn:hover { background: #333; }
+.stats-link { display: none; }
 
 /* ── STATS SCREEN ── */
 #screen-stats { flex-direction: column; }
-.stats-scroll { flex: 1; overflow-y: auto; padding: 20px 20px 40px; }
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 24px;
-}
+.stats-scroll { flex: 1; overflow-y: auto; padding: 16px 16px 40px; }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
 .stat-pill {
   background: var(--bg2);
   border: 1px solid var(--line);
   border-radius: var(--r);
-  padding: 18px 14px;
+  padding: 14px;
   text-align: center;
 }
-.stat-pill-num {
-  font-family: 'Syne', sans-serif;
-  font-size: 34px;
-  font-weight: 800;
-  color: var(--text);
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.stat-pill-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.stat-section {
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  padding: 18px;
-  margin-bottom: 12px;
-}
-.stat-q-text {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text2);
-  margin-bottom: 14px;
-  line-height: 1.4;
-}
-.bar-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 9px;
-}
-.bar-label { font-size: 12px; min-width: 64px; max-width: 110px; word-break: break-word; color: var(--text); flex-shrink: 0; line-height: 1.3; }
-.bar-track { flex: 1; height: 20px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
-.bar-fill {
-  height: 100%;
-  background: var(--text);
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  padding-left: 7px;
-  transition: width 0.5s ease;
-  min-width: 2px;
-}
-.bar-pct { font-family: 'DM Mono', monospace; font-size: 9px; color: white; font-weight: 500; }
-.bar-n { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); min-width: 24px; text-align: right; }
-.text-answers { display: flex; flex-direction: column; gap: 6px; }
-.text-answer-item {
-  background: var(--bg2);
-  border-radius: 5px;
-  padding: 9px 12px;
-  font-size: 13px;
-  color: var(--text2);
-  border-left: 2px solid var(--line);
-}
-.stat-footer { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 10px; }
-.export-row { display: flex; gap: 10px; margin-top: 20px; }
+.stat-pill-num { font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; margin-bottom: 4px; }
+.stat-pill-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); }
+.stat-section { background: var(--bg); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; margin-bottom: 10px; }
+.stat-q-text { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 12px; line-height: 1.4; }
+.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+.bar-label { font-size: 11px; min-width: 64px; max-width: 110px; word-break: break-word; color: var(--text); flex-shrink: 0; line-height: 1.3; }
+.bar-track { flex: 1; height: 16px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--text); border-radius: 2px; display: flex; align-items: center; padding-left: 6px; transition: width 0.4s ease; min-width: 2px; }
+.bar-pct { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: white; }
+.bar-n { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); min-width: 20px; text-align: right; }
+.text-answers { display: flex; flex-direction: column; gap: 4px; }
+.text-answer-item { background: var(--bg2); border-radius: 2px; padding: 7px 10px; font-size: 12px; color: var(--text2); border-left: 2px solid var(--line); }
+.stat-footer { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 8px; }
+.export-row { display: flex; gap: 8px; margin-top: 20px; }
 .export-btn {
   flex: 1;
-  padding: 14px;
-  border: 1.5px solid var(--line);
+  padding: 12px;
+  border: 1px solid var(--line);
   border-radius: var(--r);
   background: none;
   color: var(--text2);
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.1s;
 }
 .export-btn:hover { border-color: var(--text); color: var(--text); }
-.export-btn.primary { background: var(--text); color: white; border-color: var(--text); font-family: 'Syne', sans-serif; font-weight: 700; }
-.export-btn.primary:hover { background: var(--accent2); }
+.export-btn.primary { background: var(--text); color: white; border-color: var(--text); }
+.export-btn.primary:hover { background: #333; }
 
 /* ── BANNERS ── */
 .info-banner {
   display: none;
-  margin: 0 0 24px;
-  padding: 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  line-height: 1.5;
-}
-.info-banner.duplicate {
-  background: #fff3cd;
-  border: 1.5px solid #f0c040;
-  color: #7a5000;
-}
-.info-banner.odmowa {
-  background: #fde8e8;
-  border: 1.5px solid #e08080;
-  color: #7a1a1a;
-}
-.info-banner-title {
-  font-family: 'Syne', sans-serif;
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border-radius: var(--r);
   font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 6px;
+  line-height: 1.5;
+  border-left: 3px solid;
 }
+.info-banner.duplicate { background: #fef9e7; border-color: #d4a017; color: #6b4400; }
+.info-banner.odmowa { background: #fdf0f0; border-color: #c0392b; color: #6b0000; }
+.info-banner-title { font-size: 11px; font-weight: 600; margin-bottom: 4px; }
 
 /* ── SECTION HEADER ── */
 .q-section {
-  font-family: 'Syne', sans-serif;
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text2);
+  background: var(--bg2);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 8px 0;
+  margin: 4px -16px 20px;
+  width: calc(100% + 32px);
+  padding-left: 16px;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: white;
-  background: var(--text);
-  padding: 10px 16px;
-  margin: 8px -20px 24px;
-  width: calc(100% + 40px);
 }
 
 /* ── TOAST ── */
 #toast {
   position: fixed;
-  bottom: 90px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--red);
+  bottom: 80px; left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: #222;
   color: white;
-  padding: 10px 18px;
-  border-radius: 6px;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
+  padding: 9px 16px;
+  border-radius: var(--r);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
   opacity: 0;
-  transition: all 0.25s;
+  transition: all 0.2s;
   pointer-events: none;
   z-index: 99;
   white-space: nowrap;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ── ADMIN SCREEN ── */
-.admin-scroll { flex: 1; overflow-y: auto; padding: 20px 20px 40px; }
-.admin-toolbar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
+.admin-scroll { flex: 1; overflow-y: auto; padding: 16px 16px 80px; }
+
+.admin-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
 }
-.response-list { display: flex; flex-direction: column; gap: 8px; }
+
+.admin-dl-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  background: var(--text);
+  color: white;
+  border: none;
+  border-radius: var(--r);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: background 0.1s;
+}
+.admin-dl-all:hover { background: #333; }
+
+.admin-dl-excel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px;
+  background: none;
+  color: var(--green);
+  border: 1px solid var(--green);
+  border-radius: var(--r);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.admin-dl-excel:hover { background: var(--sel-bg); }
+
+.admin-toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
+
+/* sticky bottom bar when items selected */
+.admin-sel-bar {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--text);
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  z-index: 50;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.15);
+}
+.admin-sel-bar.visible { display: flex; }
+.admin-sel-bar span { flex: 1; }
+.admin-sel-bar button {
+  background: white;
+  color: var(--text);
+  border: none;
+  border-radius: var(--r);
+  padding: 8px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.admin-sel-bar button:hover { background: #e8e8e8; }
+
+.response-list { display: flex; flex-direction: column; gap: 6px; }
 .response-item {
   background: var(--bg);
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: var(--r);
-  padding: 12px 14px;
+  padding: 10px 12px;
   display: flex;
   align-items: center;
   gap: 10px;
+  transition: border-color 0.1s;
 }
+.response-item.is-selected { border-color: var(--text); background: var(--bg2); }
 .response-item-check {
-  width: 20px;
-  height: 20px;
-  border: 1.5px solid var(--line);
-  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
   flex-shrink: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s;
-  font-size: 12px;
+  transition: all 0.1s;
+  font-size: 11px;
 }
 .response-item-check.checked { background: var(--text); border-color: var(--text); color: white; }
 .response-item-info { flex: 1; min-width: 0; }
-.response-item-id {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text);
-}
-.response-item-ts {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 2px;
-}
+.response-item-id { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--text); }
+.response-item-ts { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
 .response-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
-.admin-empty {
-  text-align: center;
-  padding: 48px 20px;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-}
-.admin-sel-bar {
-  display: none;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  background: var(--text);
-  color: white;
+.dl-one-btn {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
   border-radius: var(--r);
-  margin-bottom: 12px;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-}
-.admin-sel-bar.visible { display: flex; }
-.admin-sel-bar button {
-  background: white;
-  color: var(--text);
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
-  font-family: 'DM Mono', monospace;
+  background: none;
+  color: var(--text2);
+  font-family: 'Inter', sans-serif;
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-left: auto;
+  transition: all 0.1s;
+  white-space: nowrap;
 }
+.dl-one-btn:hover { border-color: var(--text); color: var(--text); }
+
+.admin-empty {
+  text-align: center;
+  padding: 40px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
 .spinner {
   display: inline-block;
-  width: 14px; height: 14px;
+  width: 12px; height: 12px;
   border: 2px solid var(--line);
   border-top-color: var(--text);
   border-radius: 50%;
@@ -594,6 +531,7 @@ html, body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
 </head>
 <body>
 
@@ -606,7 +544,7 @@ html, body {
   <div class="topbar">
     <div class="topbar-logo">Ankieta</div>
     <div class="topbar-count" id="resp-count">— odpowiedzi</div>
-    <div style="display:flex;gap:8px"><button class="topbar-btn" onclick="showStats()">Dane</button><button class="topbar-btn" onclick="showAdmin()">⬇ Pobierz</button></div>
+    <div style="display:flex;gap:8px"><button class="topbar-btn" onclick="showAdmin()">Pobierz</button></div>
   </div>
   <div class="progress-wrap">
     <div class="progress-bar" id="progress-bar" style="width:0%"></div>
@@ -614,11 +552,11 @@ html, body {
 
   <div class="form-scroll" id="form-scroll">
     <div id="duplicate-banner" class="info-banner duplicate" style="display:none">
-      <div class="info-banner-title">⚠ Duplikat — zatrzymaj wywiad</div>
+      <div class="info-banner-title">Duplikat — zatrzymaj wywiad</div>
       Wywiad był już przeprowadzony z tą osobą dzisiaj. Nie należy rozpoczynać kolejnego wywiadu. Zaznacz duplikat i zakończ.
     </div>
     <div id="odmowa-banner" class="info-banner odmowa" style="display:none">
-      <div class="info-banner-title">ℹ Odmowa udziału</div>
+      <div class="info-banner-title">Odmowa udziału</div>
       Osoba odmówiła udziału w badaniu. Wypełnij wyłącznie płeć i wiek (oraz szacowany wiek jeśli kontakt utrudniony). Następnie podaj funkcję ankietera i wyślij.
     </div>
     <!-- Questions rendered by JS -->
@@ -638,7 +576,6 @@ html, body {
   <div class="thanks-title">Dziękujemy!</div>
   <div class="thanks-sub" id="thanks-sub">Odpowiedź #1 zapisana</div>
   <button class="next-btn" onclick="startNext()">Następna osoba →</button>
-  <span class="stats-link" onclick="showStats()">Podgląd danych</span>
 </div>
 
 <!-- ══════════════════════════════════════
@@ -666,26 +603,33 @@ html, body {
   </div>
   <div class="admin-scroll">
 
-    <div class="admin-sel-bar" id="sel-bar">
-      <span id="sel-count">0 zaznaczonych</span>
-      <button onclick="downloadSelected()">⬇ Pobierz zaznaczone (.zip)</button>
-    </div>
+    <!-- SECTION A: .docx from server -->
+    <div class="admin-section-label">Kwestionariusze (.docx) — z serwera</div>
+
+    <button class="admin-dl-all" onclick="downloadAll()">Pobierz wszystkie (.zip)</button>
 
     <div class="admin-toolbar">
-      <button class="export-btn primary" onclick="downloadAll()" style="flex:none;padding:12px 18px">
-        ⬇ Pobierz wszystkie (.zip)
-      </button>
-      <button class="export-btn" onclick="toggleSelectAll()" id="sel-all-btn" style="flex:none;padding:12px 18px">
-        Zaznacz wszystkie
-      </button>
-      <button class="export-btn" onclick="loadAdmin()" id="refresh-btn" style="flex:none;padding:12px 14px">
-        ↻
-      </button>
+      <button class="export-btn" onclick="toggleSelectAll()" id="sel-all-btn" style="flex:none;padding:10px 16px">Zaznacz wszystkie</button>
+      <button class="export-btn" onclick="loadAdmin()" style="flex:none;padding:10px 14px">Odswiez</button>
     </div>
 
     <div class="response-list" id="response-list">
       <div class="admin-empty">Ładowanie...</div>
     </div>
+
+    <!-- SECTION B: SQLite from local storage -->
+    <div class="admin-section-label" style="margin-top:28px">Dane (.sqlite) — lokalnie</div>
+    <button class="admin-dl-excel" onclick="exportSQLite()">Eksportuj dane do SQLite</button>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:6px;text-align:center">
+      Eksportuje odpowiedzi zapisane w tej przeglądarce
+    </div>
+
+  </div>
+
+  <!-- sticky bottom bar — appears when items are selected -->
+  <div class="admin-sel-bar" id="sel-bar">
+    <span id="sel-count">0 zaznaczonych</span>
+    <button onclick="downloadSelected()">Pobierz zaznaczone (.zip)</button>
   </div>
 </div>
 
@@ -708,6 +652,9 @@ const FORM_TITLE = "Kwestionariusz bezdomności 2026";
 // Types: 'radio' | 'checkbox' | 'yesno' | 'text' | 'number' | 'section'
 // condition: { key: 'field_key', answer: 'value' }  — show only if that field equals value
 // For checkbox conditions answer can be checked with includes
+
+// Set to '' for Vercel (same origin). Change to e.g. 'http://localhost:3000' for local dev with a running API server.
+const BACKEND_URL = '';
 
 const QUESTIONS = [
 
@@ -824,6 +771,7 @@ const QUESTIONS = [
     key: "p3_status_cudzoziemca",
     text: "3.2. Status cudzoziemca:",
     type: "radio", required: false,
+    condition: { key: 'p3_obywatelstwo', answer: 'NIEPOLSKIE' },
     options: ["Uchodźcy", "Ochrona tymczasowa", "Stały pobyt", "Nieuregulowany"],
   },
 
@@ -1102,7 +1050,7 @@ function renderForm() {
     block.className = 'q-block' + (isConditional ? ' hidden' : '');
     block.id = 'qblock_' + q.key;
 
-    const condTag = isConditional ? `<span class="cond-tag">⚡ warunkowe</span>` : '';
+    const condTag = isConditional ? `<span class="cond-tag">warunkowe</span>` : '';
     const maxTag = q.maxSelect ? `<span class="cond-tag" style="color:#555;border-color:#ccc;background:#f5f5f5">max ${q.maxSelect}</span>` : '';
 
     block.innerHTML = `
@@ -1269,7 +1217,11 @@ function isVisible(q) {
   if (mode === 'duplicate') return ALWAYS_KEYS.has(key);
   if (mode === 'odmowa')    return ODMOWA_KEYS.has(key);
   if (mode === 'skrocony' && SKROCONY_HIDDEN.has(key)) return false;
-  if (q.condition) return answers[q.condition.key] === q.condition.answer;
+  if (q.condition) {
+    const val = answers[q.condition.key];
+    if (q.condition.answer === 'NIEPOLSKIE') return val !== undefined && val !== 'Polskie';
+    return val === q.condition.answer;
+  }
   return true;
 }
 
@@ -1354,8 +1306,6 @@ function submitForm() {
   saveData();
 
   // ── POST TO BACKEND ──────────────────────────────────────
-  // Change BACKEND_URL to your FastAPI server address
-  const BACKEND_URL = '';  // empty = same origin (Vercel). For local dev: 'http://localhost:8000'
   fetch(BACKEND_URL + '/api/responses', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1370,7 +1320,12 @@ function submitForm() {
 }
 
 function startNext() {
-  
+  answers = {};
+  renderForm();
+  showScreen('screen-form');
+  document.getElementById('form-scroll').scrollTop = 0;
+}
+
 // ════════════════════════════════════════════════════════
 //  ADMIN — DOWNLOAD PANEL
 // ════════════════════════════════════════════════════════
@@ -1398,21 +1353,38 @@ async function loadAdmin() {
       adminItems.length + ' ' + plural(adminItems.length, 'wypełnienie', 'wypełnienia', 'wypełnień');
     renderAdminList();
   } catch(e) {
-    list.innerHTML = '<div class="admin-empty">Błąd połączenia z backendem.<br>' + e.message + '</div>';
+    // Backend unavailable — fall back to locally stored responses
+    if (responses.length) {
+      adminItems = responses.map(r => ({ id: r.id, ts: r.ts, created: r.ts }));
+      document.getElementById('admin-total').textContent =
+        adminItems.length + ' ' + plural(adminItems.length, 'wypełnienie', 'wypełnienia', 'wypełnień') + ' (lokalnie)';
+      renderAdminList(true);
+    } else {
+      list.innerHTML = '<div class="admin-empty">Brak danych lokalnych</div>';
+    }
   }
 }
 
-function renderAdminList() {
+function renderAdminList(localMode = false) {
   const list = document.getElementById('response-list');
   if (!adminItems.length) {
-    list.innerHTML = '<div class="admin-empty">📭<br>Brak wypełnień</div>';
+    list.innerHTML = '<div class="admin-empty">Brak wypełnień</div>';
     return;
   }
+  // Hide docx download controls when no server available
+  document.querySelector('.admin-dl-all').style.display = localMode ? 'none' : '';
+  document.querySelector('.admin-toolbar').style.display = localMode ? 'none' : '';
+  document.querySelector('.admin-section-label').textContent = localMode
+    ? 'Wypełnienia — lokalnie (brak serwera)'
+    : 'Kwestionariusze (.docx) — z serwera';
+
   list.innerHTML = adminItems.map(item => {
     const date = item.ts ? new Date(item.ts).toLocaleString('pl-PL') : (item.created || '—');
     const checked = selected.has(item.id) ? 'checked' : '';
+    const selectedCls = selected.has(item.id) ? 'is-selected' : '';
+    const actionBtn = localMode ? '' : `<button class="dl-one-btn" onclick="downloadOne(${item.id})">.docx</button>`;
     return `
-    <div class="response-item" id="ri_${item.id}">
+    <div class="response-item ${selectedCls}" id="ri_${item.id}">
       <div class="response-item-check ${checked}" onclick="toggleSelect(${item.id})">
         ${selected.has(item.id) ? '✓' : ''}
       </div>
@@ -1420,9 +1392,7 @@ function renderAdminList() {
         <div class="response-item-id">#${String(item.id).padStart(4,'0')}</div>
         <div class="response-item-ts">${date}</div>
       </div>
-      <div class="response-item-actions">
-        <button class="export-btn" style="padding:7px 12px;font-size:10px" onclick="downloadOne(${item.id})">⬇ .docx</button>
-      </div>
+      <div class="response-item-actions">${actionBtn}</div>
     </div>`;
   }).join('');
 }
@@ -1471,18 +1441,12 @@ async function downloadAll() {
 }
 
 function triggerDownload(url) {
-  // Create invisible link and click it — browser handles the download
   const a = document.createElement('a');
   a.href = url;
   a.style.display = 'none';
   document.body.appendChild(a);
   a.click();
   setTimeout(() => a.remove(), 1000);
-}
-
-renderForm();
-  showScreen('screen-form');
-  document.getElementById('form-scroll').scrollTop = 0;
 }
 
 // ════════════════════════════════════════════════════════
@@ -1508,7 +1472,7 @@ function renderStats() {
 
   QUESTIONS.forEach(q => {
     if (q.type === 'section') {
-      html += `<div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin:20px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)">${q.text}</div>`;
+      html += `<div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin:20px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)">${q.text}</div>`;
       return;
     }
 
@@ -1517,7 +1481,7 @@ function renderStats() {
     if (q.type === 'text' || q.type === 'number') {
       const vals = responses.map(r => r.answers[q.key]).filter(v => v !== undefined && v !== '');
       if (!vals.length) {
-        html += `<div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">Brak odpowiedzi</div>`;
+        html += `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">Brak odpowiedzi</div>`;
       } else {
         html += `<div class="text-answers">`;
         vals.slice(-6).forEach(t => { html += `<div class="text-answer-item">${t}</div>`; });
@@ -1551,8 +1515,8 @@ function renderStats() {
   });
 
   html += `<div class="export-row">
-    <button class="export-btn" onclick="exportCSV()">⬇ CSV</button>
-    <button class="export-btn primary" onclick="exportPrint()">🖨 Drukuj</button>
+    <button class="export-btn" onclick="exportCSV()">CSV</button>
+    <button class="export-btn primary" onclick="exportPrint()">Drukuj</button>
   </div>`;
 
   el.innerHTML = html;
@@ -1561,6 +1525,41 @@ function renderStats() {
 // ════════════════════════════════════════════════════════
 //  EXPORT
 // ════════════════════════════════════════════════════════
+
+async function exportSQLite() {
+  if (!responses.length) { toast('Brak danych lokalnych'); return; }
+  toast('Generowanie bazy…');
+
+  const SQL = await initSqlJs({
+    locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`
+  });
+  const db = new SQL.Database();
+
+  db.run(`CREATE TABLE IF NOT EXISTS responses (
+    id      INTEGER PRIMARY KEY,
+    ext_id  TEXT,
+    ts      TEXT,
+    created TEXT,
+    answers TEXT
+  )`);
+
+  const stmt = db.prepare(
+    'INSERT INTO responses (id, ext_id, ts, created, answers) VALUES (?,?,?,?,?)'
+  );
+  responses.forEach(r => {
+    stmt.run([r.id, r.id, r.ts, r.ts, JSON.stringify(r.answers)]);
+  });
+  stmt.free();
+
+  const bytes = db.export();
+  const blob  = new Blob([bytes], { type: 'application/x-sqlite3' });
+  const a     = document.createElement('a');
+  a.href      = URL.createObjectURL(blob);
+  a.download  = 'kwestionariusz_' + new Date().toISOString().slice(0, 10) + '.sqlite';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
 
 function exportCSV() {
   if (!responses.length) { toast('Brak danych'); return; }

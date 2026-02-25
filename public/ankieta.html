@@ -1184,7 +1184,7 @@ document.addEventListener('input', function(e) {
 // ════════════════════════════════════════════════════════
 
 function setAnswer(key, val, el, type) {
-  answers[key] = val;
+  const alreadySelected = answers[key] === val && el.classList.contains('selected');
   const container = document.getElementById('qa_' + key);
   if (type === 'radio') {
     container.querySelectorAll('.opt').forEach(e => {
@@ -1192,13 +1192,23 @@ function setAnswer(key, val, el, type) {
       const m = e.querySelector('.opt-marker');
       if (m) m.textContent = '';
     });
-    el.classList.add('selected');
-    const m = el.querySelector('.opt-marker');
-    if (m) m.textContent = '✓';
+    if (alreadySelected) {
+      delete answers[key];
+    } else {
+      answers[key] = val;
+      el.classList.add('selected');
+      const m = el.querySelector('.opt-marker');
+      if (m) m.textContent = '✓';
+    }
   }
   if (type === 'yesno') {
     container.querySelectorAll('.yesno-btn').forEach(e => e.classList.remove('selected'));
-    el.classList.add('selected');
+    if (alreadySelected) {
+      delete answers[key];
+    } else {
+      answers[key] = val;
+      el.classList.add('selected');
+    }
   }
   checkConditions();
   updateProgress();

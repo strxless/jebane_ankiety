@@ -175,28 +175,6 @@ html, body {
 .yesno-btn.yes.selected { border-color: var(--green); background: #eef4f0; color: var(--green); }
 .yesno-btn.no.selected { border-color: var(--red); background: #faeaea; color: var(--red); }
 
-/* scale */
-.scale-row { display: flex; gap: 6px; }
-.scale-btn {
-  flex: 1;
-  aspect-ratio: 1;
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  background: var(--bg);
-  cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 15px;
-  color: var(--text2);
-  transition: all 0.1s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-}
-.scale-btn:hover { border-color: #aaaaaa; color: var(--text); }
-.scale-btn.selected { border-color: var(--text); background: var(--text); color: white; }
-.scale-labels { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 6px; }
-
 /* text */
 .q-textarea {
   width: 100%;
@@ -291,31 +269,296 @@ html, body {
 .next-btn:hover { background: #333; }
 .stats-link { display: none; }
 
-/* ── STATS SCREEN ── */
+/* ── STATS SCREEN (LIVE FROM BACKEND) ── */
 #screen-stats { flex-direction: column; }
 .stats-scroll { flex: 1; overflow-y: auto; padding: 16px 16px 40px; }
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+
+/* top summary pills */
+.stats-pills {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
 .stat-pill {
   background: var(--bg2);
   border: 1px solid var(--line);
   border-radius: var(--r);
-  padding: 14px;
+  padding: 14px 10px;
   text-align: center;
 }
-.stat-pill-num { font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; margin-bottom: 4px; }
-.stat-pill-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); }
-.stat-section { background: var(--bg); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; margin-bottom: 10px; }
-.stat-q-text { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 12px; line-height: 1.4; }
-.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
-.bar-label { font-size: 11px; min-width: 64px; max-width: 110px; word-break: break-word; color: var(--text); flex-shrink: 0; line-height: 1.3; }
-.bar-track { flex: 1; height: 16px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
-.bar-fill { height: 100%; background: var(--text); border-radius: 2px; display: flex; align-items: center; padding-left: 6px; transition: width 0.4s ease; min-width: 2px; }
-.bar-pct { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: white; }
-.bar-n { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); min-width: 20px; text-align: right; }
-.text-answers { display: flex; flex-direction: column; gap: 4px; }
-.text-answer-item { background: var(--bg2); border-radius: 2px; padding: 7px 10px; font-size: 12px; color: var(--text2); border-left: 2px solid var(--line); }
-.stat-footer { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 8px; }
-.export-row { display: flex; gap: 8px; margin-top: 20px; }
+.stat-pill-num {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-pill-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+}
+
+/* section divider */
+.stats-section-hdr {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text2);
+  background: var(--bg2);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 8px 0;
+  margin: 4px -16px 14px;
+  width: calc(100% + 32px);
+  padding-left: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* individual question card */
+.stat-card {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.stat-card-head {
+  padding: 11px 14px 8px;
+  border-bottom: 1px solid var(--bg3);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.stat-card-qnum {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  background: var(--bg3);
+  border: 1px solid var(--line);
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: var(--text2);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.stat-card-qtxt {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text);
+  flex: 1;
+}
+.stat-card-body { padding: 10px 14px 12px; }
+
+/* bar rows */
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+.bar-row:last-child { margin-bottom: 0; }
+.bar-label {
+  font-size: 11px;
+  width: 120px;
+  flex-shrink: 0;
+  color: var(--text);
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bar-track {
+  flex: 1;
+  height: 18px;
+  background: var(--bg3);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.bar-fill {
+  height: 100%;
+  background: var(--text);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  min-width: 2px;
+}
+.bar-fill.zero { min-width: 0; background: none; }
+.bar-pct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: white;
+  white-space: nowrap;
+}
+.bar-n {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  width: 24px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.bar-row.winner .bar-fill { background: var(--green); }
+.bar-row.winner .bar-label { font-weight: 600; }
+
+.stat-card-footer {
+  padding: 6px 14px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  border-top: 1px solid var(--bg3);
+}
+
+/* no-data state */
+.stats-empty {
+  text-align: center;
+  padding: 60px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+.stats-error {
+  margin: 20px 0;
+  padding: 14px;
+  background: #fdf0f0;
+  border: 1px solid #f0c0c0;
+  border-radius: var(--r);
+  font-size: 13px;
+  color: #600;
+}
+
+/* top bar row for stats */
+.stats-topbar-actions { display: flex; gap: 8px; }
+.stats-reload-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.stats-reload-btn:hover { border-color: var(--text); color: var(--text); }
+.stats-last-updated {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  padding: 12px 0 4px;
+}
+
+/* ── ADMIN SCREEN ── */
+.admin-scroll { flex: 1; overflow-y: auto; padding: 16px 16px 80px; }
+
+.admin-dl-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  background: var(--text);
+  color: white;
+  border: none;
+  border-radius: var(--r);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: background 0.1s;
+}
+.admin-dl-all:hover { background: #333; }
+
+.admin-toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
+
+.admin-sel-bar {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--text);
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  z-index: 50;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.15);
+}
+.admin-sel-bar.visible { display: flex; }
+.admin-sel-bar span { flex: 1; }
+.admin-sel-bar button {
+  background: white;
+  color: var(--text);
+  border: none;
+  border-radius: var(--r);
+  padding: 8px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.admin-sel-bar button:hover { background: #e8e8e8; }
+
+.response-list { display: flex; flex-direction: column; gap: 6px; }
+.response-item {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.1s;
+}
+.response-item.is-selected { border-color: var(--text); background: var(--bg2); }
+.response-item-check {
+  width: 18px; height: 18px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s;
+  font-size: 11px;
+}
+.response-item-check.checked { background: var(--text); border-color: var(--text); color: white; }
+.response-item-info { flex: 1; min-width: 0; }
+.response-item-id { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--text); }
+.response-item-ts { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
+.response-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.dl-one-btn {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: none;
+  color: var(--text2);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.1s;
+  white-space: nowrap;
+}
+.dl-one-btn:hover { border-color: var(--text); color: var(--text); }
+
+.admin-empty {
+  text-align: center;
+  padding: 40px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
 .export-btn {
   flex: 1;
   padding: 12px;
@@ -330,8 +573,18 @@ html, body {
   transition: all 0.1s;
 }
 .export-btn:hover { border-color: var(--text); color: var(--text); }
-.export-btn.primary { background: var(--text); color: white; border-color: var(--text); }
-.export-btn.primary:hover { background: #333; }
+
+.spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid var(--line);
+  border-top-color: var(--text);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── BANNERS ── */
 .info-banner {
@@ -381,129 +634,6 @@ html, body {
   white-space: nowrap;
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* ── ADMIN SCREEN ── */
-.admin-scroll { flex: 1; overflow-y: auto; padding: 16px 16px 80px; }
-
-
-.admin-dl-all {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 14px;
-  background: var(--text);
-  color: white;
-  border: none;
-  border-radius: var(--r);
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 8px;
-  transition: background 0.1s;
-}
-.admin-dl-all:hover { background: #333; }
-
-
-.admin-toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
-
-/* sticky bottom bar when items selected */
-.admin-sel-bar {
-  display: none;
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--text);
-  color: white;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  z-index: 50;
-  box-shadow: 0 -2px 12px rgba(0,0,0,0.15);
-}
-.admin-sel-bar.visible { display: flex; }
-.admin-sel-bar span { flex: 1; }
-.admin-sel-bar button {
-  background: white;
-  color: var(--text);
-  border: none;
-  border-radius: var(--r);
-  padding: 8px 14px;
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.admin-sel-bar button:hover { background: #e8e8e8; }
-
-.response-list { display: flex; flex-direction: column; gap: 6px; }
-.response-item {
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  padding: 10px 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: border-color 0.1s;
-}
-.response-item.is-selected { border-color: var(--text); background: var(--bg2); }
-.response-item-check {
-  width: 18px;
-  height: 18px;
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  flex-shrink: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.1s;
-  font-size: 11px;
-}
-.response-item-check.checked { background: var(--text); border-color: var(--text); color: white; }
-.response-item-info { flex: 1; min-width: 0; }
-.response-item-id { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--text); }
-.response-item-ts { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
-.response-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
-.dl-one-btn {
-  padding: 6px 10px;
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  background: none;
-  color: var(--text2);
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.1s;
-  white-space: nowrap;
-}
-.dl-one-btn:hover { border-color: var(--text); color: var(--text); }
-
-.admin-empty {
-  text-align: center;
-  padding: 40px 20px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.spinner {
-  display: inline-block;
-  width: 12px; height: 12px;
-  border: 2px solid var(--line);
-  border-top-color: var(--text);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  vertical-align: middle;
-  margin-right: 6px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
 </style>
 </head>
 <body>
@@ -517,7 +647,10 @@ html, body {
   <div class="topbar">
     <div class="topbar-logo">Ankieta</div>
     <div class="topbar-count" id="resp-count">— odpowiedzi</div>
-    <div style="display:flex;gap:8px"><button class="topbar-btn" onclick="showAdmin()">Pobierz</button></div>
+    <div style="display:flex;gap:8px">
+      <button class="topbar-btn" onclick="showStatsScreen()">Statystyki</button>
+      <button class="topbar-btn" onclick="showAdmin()">Pobierz</button>
+    </div>
   </div>
   <div class="progress-wrap">
     <div class="progress-bar" id="progress-bar" style="width:0%"></div>
@@ -532,7 +665,6 @@ html, body {
       <div class="info-banner-title">Odmowa udziału</div>
       Osoba odmówiła udziału w badaniu. Wypełnij wyłącznie płeć i wiek (oraz szacowany wiek jeśli kontakt utrudniony). Następnie podaj funkcję ankietera i wyślij.
     </div>
-    <!-- Questions rendered by JS -->
   </div>
 
   <div class="bottom-bar">
@@ -545,23 +677,25 @@ html, body {
 ══════════════════════════════════════ -->
 <div class="screen" id="screen-thanks">
   <div class="thanks-icon">✓</div>
-
   <div class="thanks-title">Dziękujemy!</div>
   <div class="thanks-sub" id="thanks-sub">Odpowiedź #1 zapisana</div>
   <button class="next-btn" onclick="startNext()">Następna osoba →</button>
 </div>
 
 <!-- ══════════════════════════════════════
-  SCREEN: STATS
+  SCREEN: STATS (LIVE FROM DB)
 ══════════════════════════════════════ -->
 <div class="screen" id="screen-stats">
   <div class="topbar">
-    <div class="topbar-logo">Dane</div>
-    <div></div>
-    <button class="topbar-btn" onclick="showForm()">← Wróć</button>
+    <div class="topbar-logo">Statystyki</div>
+    <div class="topbar-count" id="stats-resp-count">—</div>
+    <div style="display:flex;gap:8px">
+      <button class="stats-reload-btn" onclick="loadStats()" id="stats-reload-btn">↻ Odśwież</button>
+      <button class="topbar-btn" onclick="showForm()">← Wróć</button>
+    </div>
   </div>
   <div class="stats-scroll" id="stats-scroll">
-    <!-- rendered by JS -->
+    <div class="stats-empty"><span class="spinner"></span> Ładowanie danych...</div>
   </div>
 </div>
 
@@ -575,21 +709,15 @@ html, body {
     <button class="topbar-btn" onclick="showForm()">← Wróć</button>
   </div>
   <div class="admin-scroll">
-
     <button class="admin-dl-all" onclick="downloadAll()">Pobierz wszystkie (.zip)</button>
-
     <div class="admin-toolbar">
       <button class="export-btn" onclick="toggleSelectAll()" id="sel-all-btn" style="flex:none;padding:10px 16px">Zaznacz wszystkie</button>
-      <button class="export-btn" onclick="loadAdmin()" style="flex:none;padding:10px 14px">Odswiez</button>
+      <button class="export-btn" onclick="loadAdmin()" style="flex:none;padding:10px 14px">Odśwież</button>
     </div>
-
     <div class="response-list" id="response-list">
       <div class="admin-empty">Ładowanie...</div>
     </div>
-
   </div>
-
-  <!-- sticky bottom bar — appears when items are selected -->
   <div class="admin-sel-bar" id="sel-bar">
     <span id="sel-count">0 zaznaczonych</span>
     <button onclick="downloadSelected()">Pobierz zaznaczone (.zip)</button>
@@ -598,378 +726,98 @@ html, body {
 
 <script>
 // ════════════════════════════════════════════════════════
-//  ██████╗ ██╗   ██╗███████╗███████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
-//  ██╔══██╗██║   ██║██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
-//  ██║  ██║ ██║ ██║ ██████╗ ███████╗   ██║   ██║██║   ██║██╔██╗ ██║███████╗
-//  ██║  ██║  ██╔╝  ██╔════╝ ╚════██║   ██║   ██║██║   ██║██║╚██╗██║╚════██║
-//  ██████╔╝   ██║   ███████╗███████║   ██║   ██║╚██████╔╝██║ ╚████║███████║
-//  ╚═════╝    ╚═╝   ╚══════╝╚══════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
-//
-//  EDIT QUESTIONS BELOW. Types: 'radio' | 'checkbox' | 'yesno' | 'scale' | 'text'
-//  For conditional: condition: { questionIndex: 0, answer: 'TAK' }
+//  QUESTIONS CONFIG
 // ════════════════════════════════════════════════════════
 
-const FORM_TITLE = "Kwestionariusz bezdomności 2026";
-
-// key = field id used in submitted JSON object
-// Types: 'radio' | 'checkbox' | 'yesno' | 'text' | 'number' | 'section'
-// condition: { key: 'field_key', answer: 'value' }  — show only if that field equals value
-// For checkbox conditions answer can be checked with includes
-
-// Set to '' for Vercel (same origin). Change to e.g. 'http://localhost:3000' for local dev with a running API server.
 const BACKEND_URL = '';
 
 const QUESTIONS = [
-
-  // ── WSTĘP ──────────────────────────────────────────────
   { key: "s_wstep", type: "section", text: "Wstęp" },
+  { key: "wywiad_dzisiaj", text: "Czy był przeprowadzony z Panią/Panem taki wywiad dzisiaj?", type: "yesno", required: true },
+  { key: "zgoda_udzial", text: "Czy zgadza się Pan/i na udział w badaniu?", type: "yesno", required: true },
+  { key: "sposob_wypelnienia", text: "Sposób wypełnienia:", type: "radio", required: true, options: ["Pełny", "Skrócony"] },
+  { key: "duplikat", text: "Jeśli to duplikat — zaznacz:", type: "yesno", required: false },
 
-  {
-    key: "wywiad_dzisiaj",
-    text: "Czy był przeprowadzony z Panią/Panem taki wywiad dzisiaj?",
-    type: "yesno", required: true,
-  },
-  {
-    key: "zgoda_udzial",
-    text: "Czy zgadza się Pan/i na udział w badaniu?",
-    type: "yesno", required: true,
-  },
-  {
-    key: "sposob_wypelnienia",
-    text: "Sposób wypełnienia:",
-    type: "radio", required: true,
-    options: ["Pełny", "Skrócony"],
-  },
-  {
-    key: "duplikat",
-    text: "Jeśli to duplikat — zaznacz:",
-    type: "yesno", required: false,
-  },
-
-  // ── MIEJSCE ─────────────────────────────────────────────
   { key: "s_miejsce", type: "section", text: "Miejsce przebywania osoby w kryzysie bezdomności" },
-
+  { key: "miasto_powyzej_100k", text: "Czy miasto powyżej 100 tysięcy mieszkańców?", type: "yesno", required: true },
   {
-    key: "miasto_powyzej_100k",
-    text: "Czy miasto powyżej 100 tysięcy mieszkańców?",
-    type: "yesno", required: true,
-  },
-  {
-    key: "miejsce_pobytu",
-    text: "Miejsce pobytu (zaznacz odpowiednie):",
-    type: "radio", required: true,
+    key: "miejsce_pobytu", text: "Miejsce pobytu (zaznacz odpowiednie):", type: "radio", required: true,
     options: [
-      "1. Noclegownia",
-      "2. Ogrzewalnia",
-      "3. Schronisko dla osób bezdomnych",
-      "4. Schronisko dla osób bezdomnych z usługami opiekuńczymi",
-      "5. Mieszkanie wspomagane",
-      "6. Mieszkanie treningowe",
-      "7. Dom dla matek z małoletnimi dziećmi i kobiet w ciąży",
-      "8. Ośrodek interwencji kryzysowej",
-      "9. Specjalistyczny ośrodek wsparcia dla osób doznających przemocy domowej",
-      "10. Szpital, hospicjum, ZOL, inna placówka zdrowia",
-      "11. Zakład karny, areszt śledczy",
-      "12. Izba wytrzeźwień, pogotowie socjalne",
-      "13. Instytucja zdrowia psychicznego / leczenia uzależnień",
-      "14. Inna placówka / miejsce mieszkalne",
-      "15. Pustostan",
-      "16. Domek na działce, altana działkowa",
+      "1. Noclegownia","2. Ogrzewalnia","3. Schronisko dla osób bezdomnych",
+      "4. Schronisko dla osób bezdomnych z usługami opiekuńczymi","5. Mieszkanie wspomagane",
+      "6. Mieszkanie treningowe","7. Dom dla matek z małoletnimi dziećmi i kobiet w ciąży",
+      "8. Ośrodek interwencji kryzysowej","9. Specjalistyczny ośrodek wsparcia dla osób doznających przemocy domowej",
+      "10. Szpital, hospicjum, ZOL, inna placówka zdrowia","11. Zakład karny, areszt śledczy",
+      "12. Izba wytrzeźwień, pogotowie socjalne","13. Instytucja zdrowia psychicznego / leczenia uzależnień",
+      "14. Inna placówka / miejsce mieszkalne","15. Pustostan","16. Domek na działce, altana działkowa",
       "17. Miejsce niemieszkalne: ulica, klatka schodowa, dworzec PKP/PKS, altana śmietnikowa, piwnica, itp.",
     ],
   },
-  {
-    key: "miejsce_nazwa",
-    text: "Nazwa / opis miejsca pobytu:",
-    type: "text", required: false,
-    placeholder: "Wpisz nazwę lub opis miejsca...",
-  },
+  { key: "miejsce_nazwa", text: "Nazwa / opis miejsca pobytu:", type: "text", required: false, placeholder: "Wpisz nazwę lub opis miejsca..." },
 
-  // ── PYTANIA ─────────────────────────────────────────────
   { key: "s_pytania", type: "section", text: "Pytania" },
-
-  // P1 – Płeć
+  { key: "p1_plec", text: "1. Płeć:", type: "radio", required: true, options: ["1.1. Kobieta", "1.2. Mężczyzna"] },
+  { key: "p2_wiek_liczba", text: "2. Wiek (liczba lat, może być szacowany):", type: "number", required: true, placeholder: "np. 45" },
+  { key: "p2_wiek_typ", text: "2. Typ wieku:", type: "radio", required: true, options: ["Wiek deklarowany", "Wiek oszacowany"] },
+  { key: "p2_wiek_kategoria", text: "2. Kategoria wieku:", type: "radio", required: true, options: ["Osoba dorosła (pow. 18 lat)", "Dziecko (0–17 lat)"] },
   {
-    key: "p1_plec",
-    text: "1. Płeć:",
-    type: "radio", required: true,
-    options: ["1.1. Kobieta", "1.2. Mężczyzna"],
-  },
-
-  // P2 – Wiek
-  {
-    key: "p2_wiek_liczba",
-    text: "2. Wiek (liczba lat, może być szacowany):",
-    type: "number", required: true,
-    placeholder: "np. 45",
+    key: "p3_obywatelstwo", text: "3.1. Obywatelstwo:", type: "radio", required: true,
+    options: ["Polskie","Ukraińskie","Inne z Europy (wyłączając Ukrainę)","Inne z Azji","Inne z Afryki","Inne pozostałe lub brak"],
   },
   {
-    key: "p2_wiek_typ",
-    text: "2. Typ wieku:",
-    type: "radio", required: true,
-    options: ["Wiek deklarowany", "Wiek oszacowany"],
-  },
-  {
-    key: "p2_wiek_kategoria",
-    text: "2. Kategoria wieku:",
-    type: "radio", required: true,
-    options: ["Osoba dorosła (pow. 18 lat)", "Dziecko (0–17 lat)"],
-  },
-
-  // P3 – Obywatelstwo
-  {
-    key: "p3_obywatelstwo",
-    text: "3.1. Obywatelstwo:",
-    type: "radio", required: true,
-    options: [
-      "Polskie",
-      "Ukraińskie",
-      "Inne z Europy (wyłączając Ukrainę)",
-      "Inne z Azji",
-      "Inne z Afryki",
-      "Inne pozostałe lub brak",
-    ],
-  },
-  {
-    key: "p3_status_cudzoziemca",
-    text: "3.2. Status cudzoziemca:",
-    type: "radio", required: false,
+    key: "p3_status_cudzoziemca", text: "3.2. Status cudzoziemca:", type: "radio", required: false,
     condition: { key: 'p3_obywatelstwo', answer: 'NIEPOLSKIE' },
-    options: ["Uchodźcy", "Ochrona tymczasowa", "Stały pobyt", "Nieuregulowany"],
+    options: ["Uchodźcy","Ochrona tymczasowa","Stały pobyt","Nieuregulowany"],
   },
-
-  // P4 – Zameldowanie
   {
-    key: "p4_zameldowanie",
-    text: "4. Czy posiada Pan(i) zameldowanie na pobyt stały?",
-    type: "radio", required: true,
-    options: [
-      "4.1. Tak, w gminie obecnego pobytu",
-      "4.2. Tak, poza gminą obecnego pobytu",
-      "4.3. Nie, ostatnie zameldowanie było w gminie obecnego pobytu",
-      "4.4. Nie, ostatnie zameldowanie było poza gminą obecnego pobytu",
-    ],
+    key: "p4_zameldowanie", text: "4. Czy posiada Pan(i) zameldowanie na pobyt stały?", type: "radio", required: true,
+    options: ["4.1. Tak, w gminie obecnego pobytu","4.2. Tak, poza gminą obecnego pobytu","4.3. Nie, ostatnie zameldowanie było w gminie obecnego pobytu","4.4. Nie, ostatnie zameldowanie było poza gminą obecnego pobytu"],
   },
-
-  // P5 – Czas bezdomności
   {
-    key: "p5_czas_bezdomnosci",
-    text: "5. Jak długo doświadcza Pan/i bezdomności?",
-    type: "radio", required: true,
-    options: [
-      "5.1. Do 3 miesięcy",
-      "5.2. Od 3 do 6 miesięcy",
-      "5.3. Od 6 do 12 miesięcy",
-      "5.4. Od 12 do 24 miesięcy",
-      "5.5. Od 2 do 5 lat",
-      "5.6. Od 5 do 10 lat",
-      "5.7. Od 10 lat do 20 lat",
-      "5.8. Powyżej 20 lat",
-    ],
+    key: "p5_czas_bezdomnosci", text: "5. Jak długo doświadcza Pan/i bezdomności?", type: "radio", required: true,
+    options: ["5.1. Do 3 miesięcy","5.2. Od 3 do 6 miesięcy","5.3. Od 6 do 12 miesięcy","5.4. Od 12 do 24 miesięcy","5.5. Od 2 do 5 lat","5.6. Od 5 do 10 lat","5.7. Od 10 lat do 20 lat","5.8. Powyżej 20 lat"],
   },
-
-  // P6 – Stan cywilny
   {
-    key: "p6_stan_cywilny",
-    text: "6. Stan cywilny:",
-    type: "radio", required: true,
-    options: [
-      "6.1. Kawaler/panna",
-      "6.2. Żonaty/zamężna",
-      "6.3. Rozwiedziony/rozwiedziona",
-      "6.4. Wdowiec/wdowa",
-      "6.5. W wolnym związku",
-      "6.6. W separacji",
-    ],
+    key: "p6_stan_cywilny", text: "6. Stan cywilny:", type: "radio", required: true,
+    options: ["6.1. Kawaler/panna","6.2. Żonaty/zamężna","6.3. Rozwiedziony/rozwiedziona","6.4. Wdowiec/wdowa","6.5. W wolnym związku","6.6. W separacji"],
   },
-
-  // P7 – Wykształcenie
   {
-    key: "p7_wyksztalcenie",
-    text: "7. Wykształcenie:",
-    type: "radio", required: true,
-    options: [
-      "7.1. Niepełne podstawowe",
-      "7.2. Podstawowe",
-      "7.3. Gimnazjalne",
-      "7.4. Zawodowe",
-      "7.5. Średnie (techniczne też)",
-      "7.6. Wyższe",
-      "7.7. Nie wiem",
-    ],
+    key: "p7_wyksztalcenie", text: "7. Wykształcenie:", type: "radio", required: true,
+    options: ["7.1. Niepełne podstawowe","7.2. Podstawowe","7.3. Gimnazjalne","7.4. Zawodowe","7.5. Średnie (techniczne też)","7.6. Wyższe","7.7. Nie wiem"],
   },
-
-  // P8 – Z kim gospodaruje
   {
-    key: "p8_gospodarstwo",
-    text: "8. Z kim obecnie Pani/Pan gospodaruje:",
-    type: "radio", required: true,
-    options: [
-      "8.1. Samodzielnie/samotnie",
-      "8.2. Partner/partnerka",
-      "8.3. Kolega/koleżanka/znajomy/znajoma",
-      "8.4. Małoletnie dzieci (0–17 lat)",
-      "8.5. Dorosłe dzieci / członkowie dalszej rodziny",
-      "8.6. Zbiorowo / w grupie",
-    ],
+    key: "p8_gospodarstwo", text: "8. Z kim obecnie Pani/Pan gospodaruje:", type: "radio", required: true,
+    options: ["8.1. Samodzielnie/samotnie","8.2. Partner/partnerka","8.3. Kolega/koleżanka/znajomy/znajoma","8.4. Małoletnie dzieci (0–17 lat)","8.5. Dorosłe dzieci / członkowie dalszej rodziny","8.6. Zbiorowo / w grupie"],
   },
-
-  // P9 – Źródła dochodu
   {
-    key: "p9_dochody",
-    text: "9. Jakie źródła dochodu Pan(i) posiada? (można zaznaczyć dowolną liczbę):",
-    type: "checkbox", required: false,
-    options: [
-      "9.1. Zatrudnienie",
-      "9.2. Praca na czarno",
-      "9.3. Praca chroniona / zatrudnienie wspierane",
-      "9.4. Zbieractwo",
-      "9.5. Zasiłek z pomocy społecznej",
-      "9.6. Świadczenia ZUS",
-      "9.7. Żebractwo",
-      "9.8. Alimenty",
-      "9.9. Renta/emerytura",
-      "9.10. Nie posiadam dochodu",
-      "9.11. Odmowa odpowiedzi",
-    ],
+    key: "p9_dochody", text: "9. Jakie źródła dochodu Pan(i) posiada? (można zaznaczyć dowolną liczbę):", type: "checkbox", required: false,
+    options: ["9.1. Zatrudnienie","9.2. Praca na czarno","9.3. Praca chroniona / zatrudnienie wspierane","9.4. Zbieractwo","9.5. Zasiłek z pomocy społecznej","9.6. Świadczenia ZUS","9.7. Żebractwo","9.8. Alimenty","9.9. Renta/emerytura","9.10. Nie posiadam dochodu","9.11. Odmowa odpowiedzi"],
   },
-
-  // P10 – Przyczyny bezdomności
   {
-    key: "p10_przyczyny",
-    text: "10. Które wydarzenia były według Pana(i) przyczyną bezdomności? (proszę zaznaczyć maksymalnie 3):",
-    type: "checkbox", required: false,
-    maxSelect: 3,
-    options: [
-      "10.1. Konflikt rodzinny",
-      "10.2. Odejście/śmierć rodzica/opiekuna w dzieciństwie",
-      "10.3. Przemoc domowa",
-      "10.4. Rozpad związku",
-      "10.5. Zadłużenie",
-      "10.6. Bezrobocie, brak pracy, utrata pracy",
-      "10.7. Problemy wynikające z orientacji seksualnej",
-      "10.8. Zły stan zdrowia, niepełnosprawność",
-      "10.9. Eksmisja, wymeldowanie z mieszkania",
-      "10.10. Uzależnienie od alkoholu",
-      "10.11. Uzależnienie od narkotyków",
-      "10.12. Uzależnienie od hazardu",
-      "10.13. Migracja / wyjazd na stałe do innego kraju",
-      "10.14. Choroba/zaburzenia psychiczne inne niż uzależnienia",
-      "10.15. Opuszczenie placówki opiekuńczo-wychowawczej",
-      "10.16. Opuszczenie zakładu karnego",
-      "10.17. Konflikt z prawem",
-      "10.18. Inna przemoc niż domowa",
-      "10.19. Problemy wynikające ze zmiany wiary",
-      "10.20. Odmowa odpowiedzi",
-    ],
+    key: "p10_przyczyny", text: "10. Które wydarzenia były według Pana(i) przyczyną bezdomności? (proszę zaznaczyć maksymalnie 3):", type: "checkbox", required: false, maxSelect: 3,
+    options: ["10.1. Konflikt rodzinny","10.2. Odejście/śmierć rodzica/opiekuna w dzieciństwie","10.3. Przemoc domowa","10.4. Rozpad związku","10.5. Zadłużenie","10.6. Bezrobocie, brak pracy, utrata pracy","10.7. Problemy wynikające z orientacji seksualnej","10.8. Zły stan zdrowia, niepełnosprawność","10.9. Eksmisja, wymeldowanie z mieszkania","10.10. Uzależnienie od alkoholu","10.11. Uzależnienie od narkotyków","10.12. Uzależnienie od hazardu","10.13. Migracja / wyjazd na stałe do innego kraju","10.14. Choroba/zaburzenia psychiczne inne niż uzależnienia","10.15. Opuszczenie placówki opiekuńczo-wychowawczej","10.16. Opuszczenie zakładu karnego","10.17. Konflikt z prawem","10.18. Inna przemoc niż domowa","10.19. Problemy wynikające ze zmiany wiary","10.20. Odmowa odpowiedzi"],
   },
-
-  // P11 – Pomoc
   {
-    key: "p11_pomoc",
-    text: "11. Czy Pan(i) korzysta z pomocy i w jakiej postaci? (proszę zaznaczyć wszystkie formy):",
-    type: "checkbox", required: false,
-    options: [
-      "11.1. Wsparcie finansowe",
-      "11.2. Posiłek",
-      "11.3. Odzież",
-      "11.4. Schronienie",
-      "11.5. Terapia uzależnień",
-      "11.6. Opieka zdrowotna",
-      "11.7. Nie korzystam",
-    ],
+    key: "p11_pomoc", text: "11. Czy Pan(i) korzysta z pomocy i w jakiej postaci? (proszę zaznaczyć wszystkie formy):", type: "checkbox", required: false,
+    options: ["11.1. Wsparcie finansowe","11.2. Posiłek","11.3. Odzież","11.4. Schronienie","11.5. Terapia uzależnień","11.6. Opieka zdrowotna","11.7. Nie korzystam"],
   },
-
-  // P12 – Oczekiwane wsparcie
   {
-    key: "p12_oczekiwane_wsparcie",
-    text: "12. W jakich obszarach oczekuje Pan(i) wsparcia/pomocy? (należy zaznaczyć maksymalnie 3 potrzeby):",
-    type: "checkbox", required: false,
-    maxSelect: 3,
-    options: [
-      "12.1. Żywnościowe",
-      "12.2. Higieniczne (w tym dostęp do łaźni)",
-      "12.3. Zdrowotne",
-      "12.4. Schronienie",
-      "12.5. Terapia uzależnień",
-      "12.6. Wsparcie psychologiczne",
-      "12.7. Pomoc prawna",
-      "12.8. Pomoc w znalezieniu pracy",
-      "12.9. Finansowe",
-      "12.10. Mieszkaniowe",
-      "12.11. Wyjście z długów",
-      "12.12. Nie oczekuję pomocy",
-    ],
+    key: "p12_oczekiwane_wsparcie", text: "12. W jakich obszarach oczekuje Pan(i) wsparcia/pomocy? (należy zaznaczyć maksymalnie 3 potrzeby):", type: "checkbox", required: false, maxSelect: 3,
+    options: ["12.1. Żywnościowe","12.2. Higieniczne (w tym dostęp do łaźni)","12.3. Zdrowotne","12.4. Schronienie","12.5. Terapia uzależnień","12.6. Wsparcie psychologiczne","12.7. Pomoc prawna","12.8. Pomoc w znalezieniu pracy","12.9. Finansowe","12.10. Mieszkaniowe","12.11. Wyjście z długów","12.12. Nie oczekuję pomocy"],
   },
 
-  // P13 – Bezdomność ukryta
   { key: "s_bezdomnosc_ukryta", type: "section", text: "13. Pytania o tzw. bezdomność ukrytą" },
+  { key: "p13_1_czy_pomieszkuje", text: "13.1. Czy obecnie Pan(i) pomieszkuje w domu/mieszkaniu u rodziny, znajomych, czy innych osób, tj. nie ma Pan(i) własnego miejsca zamieszkania i przebywa tymczasowo u innych osób?", type: "yesno", required: true },
+  { key: "p13_1_2_jak_dlugo", text: "13.1.2. Jak długo obecnie Pan(i) pomieszkuje w domu/mieszkaniu u rodziny, znajomych, innych osób nie mając własnego miejsca zamieszkania?", type: "radio", required: false, condition: { key: "p13_1_czy_pomieszkuje", answer: "TAK" }, options: ["Do 3 miesięcy","Od 3 do 12 miesięcy","Od 1 roku do 2 lat","Od 2 do 5 lat","Powyżej 5 lat"] },
+  { key: "p13_2_czy_pomieszkiwal", text: "13.2. Czy w przeszłości Pan(i) tymczasowo pomieszkiwał(a) w domu/mieszkaniu u rodziny, znajomych, czy innych osób, nie mając własnego miejsca zamieszkania?", type: "yesno", required: true },
+  { key: "p13_2_jak_dlugo", text: "13.2. Jak długo tymczasowo Pan(i) pomieszkiwał(a) w domu/mieszkaniu u rodziny, znajomych, innych osób, nie mając własnego miejsca zamieszkania?", type: "radio", required: false, condition: { key: "p13_2_czy_pomieszkiwal", answer: "TAK" }, options: ["Do 3 miesięcy","Od 3 do 12 miesięcy","Od 1 roku do 2 lat","Od 2 do 5 lat","Powyżej 5 lat"] },
+  { key: "p13_3_czy_zna", text: "13.3. Czy zna Pan(i) inne osoby, które w ciągu ostatnich 12 miesięcy tymczasowo pomieszkiwały w domu/mieszkaniu u rodziny, czy znajomych, innych osób, nie mając własnego miejsca zamieszkania?", type: "yesno", required: true },
+  { key: "p13_3_ile_osob", text: "13.3. Jeśli Tak, ile Pan(i) zna takich osób?", type: "radio", required: false, condition: { key: "p13_3_czy_zna", answer: "TAK" }, options: ["1–2","3–5","6–10","Więcej niż 10"] },
 
-  {
-    key: "p13_1_czy_pomieszkuje",
-    text: "13.1. Czy obecnie Pan(i) pomieszkuje w domu/mieszkaniu u rodziny, znajomych, czy innych osób, tj. nie ma Pan(i) własnego miejsca zamieszkania i przebywa tymczasowo u innych osób?",
-    type: "yesno", required: true,
-  },
-  {
-    key: "p13_1_2_jak_dlugo",
-    text: "13.1.2. Jak długo obecnie Pan(i) pomieszkuje w domu/mieszkaniu u rodziny, znajomych, innych osób nie mając własnego miejsca zamieszkania?",
-    type: "radio", required: false,
-    condition: { key: "p13_1_czy_pomieszkuje", answer: "TAK" },
-    options: [
-      "Do 3 miesięcy",
-      "Od 3 do 12 miesięcy",
-      "Od 1 roku do 2 lat",
-      "Od 2 do 5 lat",
-      "Powyżej 5 lat",
-    ],
-  },
-  {
-    key: "p13_2_czy_pomieszkiwal",
-    text: "13.2. Czy w przeszłości Pan(i) tymczasowo pomieszkiwał(a) w domu/mieszkaniu u rodziny, znajomych, czy innych osób, nie mając własnego miejsca zamieszkania?",
-    type: "yesno", required: true,
-  },
-  {
-    key: "p13_2_jak_dlugo",
-    text: "13.2. Jak długo tymczasowo Pan(i) pomieszkiwał(a) w domu/mieszkaniu u rodziny, znajomych, innych osób, nie mając własnego miejsca zamieszkania?",
-    type: "radio", required: false,
-    condition: { key: "p13_2_czy_pomieszkiwal", answer: "TAK" },
-    options: [
-      "Do 3 miesięcy",
-      "Od 3 do 12 miesięcy",
-      "Od 1 roku do 2 lat",
-      "Od 2 do 5 lat",
-      "Powyżej 5 lat",
-    ],
-  },
-  {
-    key: "p13_3_czy_zna",
-    text: "13.3. Czy zna Pan(i) inne osoby, które w ciągu ostatnich 12 miesięcy tymczasowo pomieszkiwały w domu/mieszkaniu u rodziny, czy znajomych, innych osób, nie mając własnego miejsca zamieszkania?",
-    type: "yesno", required: true,
-  },
-  {
-    key: "p13_3_ile_osob",
-    text: "13.3. Jeśli Tak, ile Pan(i) zna takich osób?",
-    type: "radio", required: false,
-    condition: { key: "p13_3_czy_zna", answer: "TAK" },
-    options: ["1–2", "3–5", "6–10", "Więcej niż 10"],
-  },
-
-  // ── FUNKCJA ANKIETERA ────────────────────────────────────
   { key: "s_ankieter", type: "section", text: "Funkcja ankietera" },
-
   {
-    key: "funkcja_ankietera",
-    text: "Funkcja ankietera:",
-    type: "radio", required: true,
-    options: [
-      "Wolontariusz",
-      "Pracownik socjalny",
-      "Pracownik placówki dla bezdomnych",
-      "Inna",
-      "Pracownik gminy",
-      "Strażnik miejski / policjant",
-      "Pracownik do spraw streetworkingu (Streetworker)",
-    ],
+    key: "funkcja_ankietera", text: "Funkcja ankietera:", type: "radio", required: true,
+    options: ["Wolontariusz","Pracownik socjalny","Pracownik placówki dla bezdomnych","Inna","Pracownik gminy","Strażnik miejski / policjant","Pracownik do spraw streetworkingu (Streetworker)"],
   },
 ];
 
@@ -979,7 +827,7 @@ const QUESTIONS = [
 
 const STORE = 'ankieta_bezdomnosc_v1';
 let responses = [];
-let answers = {}; // keyed by q.key
+let answers = {};
 
 function loadData() {
   try { responses = JSON.parse(localStorage.getItem(STORE)) || []; } catch(e) { responses = []; }
@@ -996,9 +844,12 @@ loadData();
 function renderForm() {
   answers = {};
   const container = document.getElementById('form-scroll');
-  container.innerHTML = '';
+  // keep banners, clear rest
+  const banner1 = document.getElementById('duplicate-banner').outerHTML;
+  const banner2 = document.getElementById('odmowa-banner').outerHTML;
+  container.innerHTML = banner1 + banner2;
 
-  QUESTIONS.forEach((q, i) => {
+  QUESTIONS.forEach(q => {
     if (q.type === 'section') {
       const sec = document.createElement('div');
       sec.className = 'q-section';
@@ -1007,15 +858,12 @@ function renderForm() {
       container.appendChild(sec);
       return;
     }
-
     const isConditional = !!q.condition;
     const block = document.createElement('div');
     block.className = 'q-block' + (isConditional ? ' hidden' : '');
     block.id = 'qblock_' + q.key;
-
     const condTag = isConditional ? `<span class="cond-tag">⚡ warunkowe</span>` : '';
     const maxTag = q.maxSelect ? `<span class="cond-tag" style="color:#555;border-color:#ccc;background:#f5f5f5">max ${q.maxSelect}</span>` : '';
-
     block.innerHTML = `
       <div class="q-label">
         ${q.required ? '<span class="req">wymagane</span>' : ''}
@@ -1026,7 +874,6 @@ function renderForm() {
     `;
     container.appendChild(block);
   });
-
   updateProgress();
   updateRespCount();
 }
@@ -1043,44 +890,33 @@ function renderAnswerUI(q) {
     return `<div class="options">${q.options.map(o => {
       const safe = o.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
       return `<div class="opt" data-key="${k}" data-val="${safe}" data-type="radio">
-        <div class="opt-marker"></div>
-        <div class="opt-label">${o}</div>
-      </div>`;
+        <div class="opt-marker"></div><div class="opt-label">${o}</div></div>`;
     }).join('')}</div>`;
   }
   if (q.type === 'checkbox') {
     return `<div class="options">${q.options.map(o => {
       const safe = o.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
       return `<div class="opt" data-key="${k}" data-val="${safe}" data-type="checkbox" data-max="${q.maxSelect||99}">
-        <div class="opt-marker square"></div>
-        <div class="opt-label">${o}</div>
-      </div>`;
+        <div class="opt-marker square"></div><div class="opt-label">${o}</div></div>`;
     }).join('')}</div>`;
   }
   if (q.type === 'text') {
-    return `<textarea class="q-textarea" data-key="${k}"
-      placeholder="${(q.placeholder||'Wpisz odpowiedź...').replace(/"/g,'&quot;')}"></textarea>`;
+    return `<textarea class="q-textarea" data-key="${k}" placeholder="${(q.placeholder||'').replace(/"/g,'&quot;')}"></textarea>`;
   }
   if (q.type === 'number') {
     return `<input class="q-textarea" type="number" inputmode="numeric" data-key="${k}"
-      placeholder="${(q.placeholder||'Wpisz liczbę...').replace(/"/g,'&quot;')}" min="0" max="120"
+      placeholder="${(q.placeholder||'').replace(/"/g,'&quot;')}" min="0" max="120"
       style="min-height:0;padding:14px 16px;">`;
   }
   return '';
 }
 
-// Event delegation — handles all option clicks and input changes
 document.addEventListener('click', function(e) {
   const el = e.target.closest('[data-type]');
   if (!el) return;
-  const type = el.dataset.type;
-  const key  = el.dataset.key;
-  const val  = el.dataset.val;
-  if (type === 'radio' || type === 'yesno') {
-    setAnswer(key, val, el, type);
-  } else if (type === 'checkbox') {
-    toggleCheck(key, val, el, parseInt(el.dataset.max) || 99);
-  }
+  const type = el.dataset.type, key = el.dataset.key, val = el.dataset.val;
+  if (type === 'radio' || type === 'yesno') setAnswer(key, val, el, type);
+  else if (type === 'checkbox') toggleCheck(key, val, el, parseInt(el.dataset.max) || 99);
 });
 document.addEventListener('input', function(e) {
   const el = e.target;
@@ -1090,39 +926,20 @@ document.addEventListener('input', function(e) {
   }
 });
 
-// ════════════════════════════════════════════════════════
-//  INTERACTIONS
-// ════════════════════════════════════════════════════════
-
 function setAnswer(key, val, el, type) {
   const alreadySelected = answers[key] === val && el.classList.contains('selected');
   const container = document.getElementById('qa_' + key);
   if (type === 'radio') {
-    container.querySelectorAll('.opt').forEach(e => {
-      e.classList.remove('selected');
-      const m = e.querySelector('.opt-marker');
-      if (m) m.textContent = '';
-    });
-    if (alreadySelected) {
-      delete answers[key];
-    } else {
-      answers[key] = val;
-      el.classList.add('selected');
-      const m = el.querySelector('.opt-marker');
-      if (m) m.textContent = '✓';
-    }
+    container.querySelectorAll('.opt').forEach(e => { e.classList.remove('selected'); const m = e.querySelector('.opt-marker'); if (m) m.textContent = ''; });
+    if (!alreadySelected) { answers[key] = val; el.classList.add('selected'); const m = el.querySelector('.opt-marker'); if (m) m.textContent = '✓'; }
+    else delete answers[key];
   }
   if (type === 'yesno') {
     container.querySelectorAll('.yesno-btn').forEach(e => e.classList.remove('selected'));
-    if (alreadySelected) {
-      delete answers[key];
-    } else {
-      answers[key] = val;
-      el.classList.add('selected');
-    }
+    if (!alreadySelected) { answers[key] = val; el.classList.add('selected'); }
+    else delete answers[key];
   }
-  checkConditions();
-  updateProgress();
+  checkConditions(); updateProgress();
 }
 
 function toggleCheck(key, val, el, maxSel) {
@@ -1130,55 +947,28 @@ function toggleCheck(key, val, el, maxSel) {
   const idx = answers[key].indexOf(val);
   const m = el.querySelector('.opt-marker');
   if (idx === -1) {
-    if (answers[key].length >= maxSel) {
-      toast(`Możesz wybrać maksymalnie ${maxSel} opcje`);
-      return;
-    }
-    answers[key].push(val);
-    el.classList.add('selected');
-    if (m) m.textContent = '✓';
+    if (answers[key].length >= maxSel) { toast(`Możesz wybrać maksymalnie ${maxSel} opcje`); return; }
+    answers[key].push(val); el.classList.add('selected'); if (m) m.textContent = '✓';
   } else {
-    answers[key].splice(idx, 1);
-    el.classList.remove('selected');
-    if (m) m.textContent = '';
+    answers[key].splice(idx, 1); el.classList.remove('selected'); if (m) m.textContent = '';
   }
   updateProgress();
 }
 
-// ── GLOBAL VISIBILITY RULES ─────────────────────────────
-//
-//  wywiad_dzisiaj = TAK  → DUPLICATE: show nothing past wstep, show banner
-//  zgoda_udzial   = NIE  → ODMOWA: only płeć + wiek + funkcja ankietera
-//  sposob_wypelnienia = Skrócony → SKRÓCONY: skip section 13
-//  otherwise → PEŁNY
-//
-const ALWAYS_KEYS = new Set([
-  's_wstep','wywiad_dzisiaj','zgoda_udzial','sposob_wypelnienia','duplikat'
-]);
-const ODMOWA_KEYS = new Set([
-  's_wstep','wywiad_dzisiaj','zgoda_udzial','sposob_wypelnienia','duplikat',
-  's_pytania','p1_plec','p2_wiek_liczba','p2_wiek_typ','p2_wiek_kategoria',
-  's_ankieter','funkcja_ankietera'
-]);
-const SKROCONY_HIDDEN = new Set([
-  's_bezdomnosc_ukryta',
-  'p13_1_czy_pomieszkuje','p13_1_2_jak_dlugo',
-  'p13_2_czy_pomieszkiwal','p13_2_jak_dlugo',
-  'p13_3_czy_zna','p13_3_ile_osob',
-]);
+const ALWAYS_KEYS = new Set(['s_wstep','wywiad_dzisiaj','zgoda_udzial','sposob_wypelnienia','duplikat']);
+const ODMOWA_KEYS = new Set(['s_wstep','wywiad_dzisiaj','zgoda_udzial','sposob_wypelnienia','duplikat','s_pytania','p1_plec','p2_wiek_liczba','p2_wiek_typ','p2_wiek_kategoria','s_ankieter','funkcja_ankietera']);
+const SKROCONY_HIDDEN = new Set(['s_bezdomnosc_ukryta','p13_1_czy_pomieszkuje','p13_1_2_jak_dlugo','p13_2_czy_pomieszkiwal','p13_2_jak_dlugo','p13_3_czy_zna','p13_3_ile_osob']);
 
 function getMode() {
   if (answers['wywiad_dzisiaj'] === 'TAK') return 'duplicate';
-  if (answers['zgoda_udzial']   === 'NIE') return 'odmowa';
+  if (answers['zgoda_udzial'] === 'NIE') return 'odmowa';
   if (answers['sposob_wypelnienia'] === 'Skrócony') return 'skrocony';
   return 'pelny';
 }
-
 function isVisible(q) {
-  const mode = getMode();
-  const key  = q.key;
+  const mode = getMode(), key = q.key;
   if (mode === 'duplicate') return ALWAYS_KEYS.has(key);
-  if (mode === 'odmowa')    return ODMOWA_KEYS.has(key);
+  if (mode === 'odmowa') return ODMOWA_KEYS.has(key);
   if (mode === 'skrocony' && SKROCONY_HIDDEN.has(key)) return false;
   if (q.condition) {
     const val = answers[q.condition.key];
@@ -1187,43 +977,30 @@ function isVisible(q) {
   }
   return true;
 }
-
 function checkConditions() {
   const mode = getMode();
-  const dupBanner = document.getElementById('duplicate-banner');
-  if (dupBanner) dupBanner.style.display = mode === 'duplicate' ? '' : 'none';
-  const odmBanner = document.getElementById('odmowa-banner');
-  if (odmBanner) odmBanner.style.display = mode === 'odmowa' ? '' : 'none';
-
+  document.getElementById('duplicate-banner').style.display = mode === 'duplicate' ? '' : 'none';
+  document.getElementById('odmowa-banner').style.display = mode === 'odmowa' ? '' : 'none';
   QUESTIONS.forEach(q => {
     const block = document.getElementById('qblock_' + q.key);
     if (!block) return;
-    if (isVisible(q)) {
-      block.classList.remove('hidden');
-    } else {
+    if (isVisible(q)) { block.classList.remove('hidden'); }
+    else {
       block.classList.add('hidden');
       if (q.type === 'section') return;
       delete answers[q.key];
       const qa = document.getElementById('qa_' + q.key);
       if (!qa) return;
-      qa.querySelectorAll('.opt').forEach(e => {
-        e.classList.remove('selected');
-        const m = e.querySelector('.opt-marker');
-        if (m) m.textContent = '';
-      });
+      qa.querySelectorAll('.opt').forEach(e => { e.classList.remove('selected'); const m = e.querySelector('.opt-marker'); if (m) m.textContent = ''; });
       qa.querySelectorAll('.yesno-btn').forEach(e => e.classList.remove('selected'));
       qa.querySelectorAll('textarea, input').forEach(e => e.value = '');
     }
   });
 }
-
 function updateProgress() {
   const actionable = QUESTIONS.filter(q => q.type !== 'section' && isVisible(q));
   const required = actionable.filter(q => q.required);
-  const answeredRequired = required.filter(q => {
-    const a = answers[q.key];
-    return a !== undefined && a !== '' && !(Array.isArray(a) && !a.length);
-  }).length;
+  const answeredRequired = required.filter(q => { const a = answers[q.key]; return a !== undefined && a !== '' && !(Array.isArray(a) && !a.length); }).length;
   const pct = required.length ? (answeredRequired / required.length) * 100 : 0;
   document.getElementById('progress-bar').style.width = pct + '%';
 }
@@ -1234,13 +1011,9 @@ async function updateRespCount() {
     if (!r.ok) return;
     const data = await r.json();
     const n = data.total ?? (data.items || []).length;
-    document.getElementById('resp-count').textContent =
-      n + ' ' + plural(n, 'wypełnienie', 'wypełnienia', 'wypełnień');
-  } catch(e) {
-    // silently ignore if no connection
-  }
+    document.getElementById('resp-count').textContent = n + ' ' + plural(n, 'wypełnienie', 'wypełnienia', 'wypełnień');
+  } catch(e) {}
 }
-
 function plural(n, a, b, c) {
   if (n === 1) return a;
   if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return b;
@@ -1256,96 +1029,228 @@ function submitForm() {
   QUESTIONS.forEach(q => {
     if (q.type === 'section' || !q.required || !isVisible(q)) return;
     const a = answers[q.key];
-    if (a === undefined || a === '' || (Array.isArray(a) && !a.length)) {
-      missing.push(q.key);
-    }
+    if (a === undefined || a === '' || (Array.isArray(a) && !a.length)) missing.push(q.key);
   });
-
   if (missing.length) {
     toast('Uzupełnij wymagane pola (' + missing.length + ')');
     const firstBlock = document.getElementById('qblock_' + missing[0]);
     if (firstBlock) firstBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
-
-  const record = {
-    id: Date.now(),
-    ts: new Date().toISOString(),
-    answers: { ...answers },
-  };
-  responses.push(record);
-  saveData();
-
-  // ── POST TO BACKEND ──────────────────────────────────────
+  const record = { id: Date.now(), ts: new Date().toISOString(), answers: { ...answers } };
+  responses.push(record); saveData();
   fetch(BACKEND_URL + '/api/responses', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(record),
-  })
-  .then(r => r.ok ? r.json() : Promise.reject(r.status))
-  .then(data => { console.log('Saved to backend, db_id:', data.db_id); updateRespCount(); })
-  .catch(err => console.warn('Backend unavailable, saved locally only:', err));
-
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(record),
+  }).then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(data => { console.log('Saved to backend, db_id:', data.db_id); updateRespCount(); })
+    .catch(err => console.warn('Backend unavailable, saved locally only:', err));
   document.getElementById('thanks-sub').textContent = 'Wypełnienie #' + responses.length + ' zapisane';
   showScreen('screen-thanks');
 }
+function startNext() { answers = {}; renderForm(); showScreen('screen-form'); document.getElementById('form-scroll').scrollTop = 0; }
 
-function startNext() {
-  answers = {};
-  renderForm();
-  showScreen('screen-form');
-  document.getElementById('form-scroll').scrollTop = 0;
+// ════════════════════════════════════════════════════════
+//  STATS SCREEN — LIVE FROM BACKEND
+// ════════════════════════════════════════════════════════
+
+async function showStatsScreen() {
+  showScreen('screen-stats');
+  await loadStats();
+}
+
+async function loadStats() {
+  const scroll = document.getElementById('stats-scroll');
+  const btn = document.getElementById('stats-reload-btn');
+  scroll.innerHTML = '<div class="stats-empty"><span class="spinner"></span> Ładowanie danych z bazy...</div>';
+  btn.textContent = '↻ Ładowanie...';
+  btn.disabled = true;
+
+  try {
+    const r = await fetch(BACKEND_URL + '/api/responses?full=1');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    const items = data.items || [];
+    // parse answers from each item
+    const allAnswers = items.map(item => {
+      try { return typeof item.answers === 'string' ? JSON.parse(item.answers) : (item.answers || {}); }
+      catch(e) { return {}; }
+    });
+    renderStatsFromData(allAnswers, items.length, data.total ?? items.length);
+  } catch(e) {
+    scroll.innerHTML = `
+      <div class="stats-error">
+        <strong>Błąd połączenia z serwerem</strong><br>
+        Sprawdź czy API jest dostępne. Wyświetlam dane lokalne (${responses.length} rekordów).
+      </div>`;
+    // fall back to localStorage data
+    const allAnswers = responses.map(r => r.answers || {});
+    renderStatsFromData(allAnswers, responses.length, responses.length, true);
+  } finally {
+    btn.textContent = '↻ Odśwież';
+    btn.disabled = false;
+  }
+}
+
+function renderStatsFromData(allAnswers, count, total, isLocal = false) {
+  const scroll = document.getElementById('stats-scroll');
+  document.getElementById('stats-resp-count').textContent =
+    total + ' ' + plural(total, 'wypełnienie', 'wypełnienia', 'wypełnień');
+
+  // compute age stats if available
+  const ages = allAnswers.map(a => parseInt(a.p2_wiek_liczba)).filter(n => !isNaN(n) && n > 0);
+  const avgAge = ages.length ? Math.round(ages.reduce((s,n)=>s+n,0)/ages.length) : null;
+  const uniqueDates = new Set(allAnswers.map(a => (a.ts||'').slice(0,10)).filter(Boolean)).size;
+
+  let html = '';
+
+  // ── TOP PILLS ──────────────────────────────────────────
+  html += `<div class="stats-pills">
+    <div class="stat-pill">
+      <div class="stat-pill-num">${total}</div>
+      <div class="stat-pill-label">Wypełnień</div>
+    </div>
+    <div class="stat-pill">
+      <div class="stat-pill-num">${avgAge !== null ? avgAge : '—'}</div>
+      <div class="stat-pill-label">Śr. wiek</div>
+    </div>
+    <div class="stat-pill">
+      <div class="stat-pill-num">${ages.length ? Math.min(...ages)+'–'+Math.max(...ages) : '—'}</div>
+      <div class="stat-pill-label">Wiek min–max</div>
+    </div>
+  </div>`;
+
+  if (isLocal) {
+    html += `<div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:14px;padding:8px 12px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--line)">⚠ dane lokalne — brak połączenia z serwerem</div>`;
+  }
+
+  if (!count) {
+    html += `<div class="stats-empty">Brak danych do wyświetlenia</div>`;
+    scroll.innerHTML = html;
+    return;
+  }
+
+  // ── QUESTION-BY-QUESTION ───────────────────────────────
+  let qIndex = 0;
+  QUESTIONS.forEach(q => {
+    if (q.type === 'section') {
+      html += `<div class="stats-section-hdr">${q.text}</div>`;
+      return;
+    }
+    if (q.type === 'text') return; // skip free-text
+    qIndex++;
+
+    // collect counts
+    const opts = q.type === 'yesno' ? ['TAK','NIE'] : (q.options || []);
+    const counts = {};
+    opts.forEach(o => counts[o] = 0);
+    let respondents = 0;
+
+    allAnswers.forEach(a => {
+      const val = a[q.key];
+      if (val === undefined || val === null || val === '') return;
+      respondents++;
+      if (Array.isArray(val)) {
+        val.forEach(v => {
+          // fuzzy match — find closest option
+          const match = opts.find(o => o === v || o.toLowerCase().startsWith(v.toLowerCase().split('.')[0]+'.') || v.toLowerCase().startsWith(o.toLowerCase().split('.')[0]+'.'));
+          if (match) counts[match]++;
+          else if (counts[v] !== undefined) counts[v]++;
+        });
+      } else {
+        const match = opts.find(o => o === val || o.toLowerCase() === val.toLowerCase() || o.toLowerCase().startsWith(val.toLowerCase().split('.')[0]+'.') || val.toLowerCase().startsWith(o.toLowerCase().split('.')[0]+'.'));
+        if (match) counts[match]++;
+        else if (counts[val] !== undefined) counts[val]++;
+      }
+    });
+
+    const totalVotes = Object.values(counts).reduce((s,n)=>s+n,0);
+    const maxCount = Math.max(...Object.values(counts));
+
+    // skip if no data at all
+    if (totalVotes === 0 && respondents === 0) {
+      html += `<div class="stat-card">
+        <div class="stat-card-head">
+          <div class="stat-card-qnum">P${qIndex}</div>
+          <div class="stat-card-qtxt">${q.text}</div>
+        </div>
+        <div class="stat-card-body" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">Brak odpowiedzi</div>
+      </div>`;
+      return;
+    }
+
+    html += `<div class="stat-card">
+      <div class="stat-card-head">
+        <div class="stat-card-qnum">P${qIndex}</div>
+        <div class="stat-card-qtxt">${q.text}</div>
+      </div>
+      <div class="stat-card-body">`;
+
+    opts.forEach(o => {
+      const n = counts[o] || 0;
+      const base = (q.type === 'checkbox') ? respondents : totalVotes;
+      const pct = base > 0 ? Math.round(n / base * 100) : 0;
+      const isWinner = n === maxCount && n > 0;
+      const label = o.replace(/^\d+[\.\d]*\s*/, ''); // strip leading number prefix
+      const displayLabel = label || o;
+
+      html += `<div class="bar-row${isWinner ? ' winner' : ''}">
+        <div class="bar-label" title="${o}">${displayLabel}</div>
+        <div class="bar-track">
+          <div class="bar-fill${n===0?' zero':''}" style="width:${pct}%">
+            ${pct >= 12 ? `<span class="bar-pct">${pct}%</span>` : ''}
+          </div>
+        </div>
+        <div class="bar-n">${n}</div>
+      </div>`;
+    });
+
+    html += `</div>`;
+
+    const footerNote = q.type === 'checkbox'
+      ? `${respondents} respondentów · wielokrotny wybór`
+      : `N = ${totalVotes}`;
+    html += `<div class="stat-card-footer">${footerNote}</div></div>`;
+  });
+
+  html += `<div class="stats-last-updated">Ostatnia aktualizacja: ${new Date().toLocaleTimeString('pl-PL')}</div>`;
+
+  scroll.innerHTML = html;
 }
 
 // ════════════════════════════════════════════════════════
 //  ADMIN — DOWNLOAD PANEL
 // ════════════════════════════════════════════════════════
 
-let adminItems = [];      // [{id, ts, created}]
+let adminItems = [];
 let selected   = new Set();
 
 async function showAdmin() {
   showScreen('screen-admin');
   await loadAdmin();
 }
-
 async function loadAdmin() {
   const list = document.getElementById('response-list');
   list.innerHTML = '<div class="admin-empty"><span class="spinner"></span>Ładowanie...</div>';
-  selected.clear();
-  updateSelBar();
-
+  selected.clear(); updateSelBar();
   try {
     const r = await fetch(BACKEND_URL + '/api/responses');
     if (!r.ok) throw new Error(await r.text());
     const data = await r.json();
     adminItems = data.items || [];
-    document.getElementById('admin-total').textContent =
-      adminItems.length + ' ' + plural(adminItems.length, 'wypełnienie', 'wypełnienia', 'wypełnień');
+    document.getElementById('admin-total').textContent = adminItems.length + ' ' + plural(adminItems.length, 'wypełnienie', 'wypełnienia', 'wypełnień');
     renderAdminList();
   } catch(e) {
     list.innerHTML = '<div class="admin-empty">Błąd połączenia z serwerem</div>';
   }
 }
-
 function renderAdminList() {
   const list = document.getElementById('response-list');
-  if (!adminItems.length) {
-    list.innerHTML = '<div class="admin-empty">Brak wypełnień</div>';
-    return;
-  }
-  document.querySelector('.admin-dl-all').style.display = '';
-  document.querySelector('.admin-toolbar').style.display = '';
-
+  if (!adminItems.length) { list.innerHTML = '<div class="admin-empty">Brak wypełnień</div>'; return; }
   list.innerHTML = adminItems.map(item => {
     const date = item.ts ? new Date(item.ts).toLocaleString('pl-PL') : (item.created || '—');
-    const checked = selected.has(item.id) ? 'checked' : '';
-    const selectedCls = selected.has(item.id) ? 'is-selected' : '';
     return `
-    <div class="response-item ${selectedCls}" id="ri_${item.id}">
-      <div class="response-item-check ${checked}" onclick="toggleSelect(${item.id})">
-        ${selected.has(item.id) ? '✓' : ''}
-      </div>
+    <div class="response-item ${selected.has(item.id)?'is-selected':''}" id="ri_${item.id}">
+      <div class="response-item-check ${selected.has(item.id)?'checked':''}" onclick="toggleSelect(${item.id})">${selected.has(item.id)?'✓':''}</div>
       <div class="response-item-info">
         <div class="response-item-id">#${String(item.id).padStart(4,'0')}</div>
         <div class="response-item-ts">${date}</div>
@@ -1356,191 +1261,27 @@ function renderAdminList() {
     </div>`;
   }).join('');
 }
-
 function toggleSelect(id) {
-  if (selected.has(id)) selected.delete(id);
-  else selected.add(id);
-  // update just that item's checkbox
+  if (selected.has(id)) selected.delete(id); else selected.add(id);
   const el = document.querySelector(`#ri_${id} .response-item-check`);
-  if (el) {
-    el.classList.toggle('checked', selected.has(id));
-    el.textContent = selected.has(id) ? '✓' : '';
-  }
+  if (el) { el.classList.toggle('checked', selected.has(id)); el.textContent = selected.has(id) ? '✓' : ''; }
   updateSelBar();
 }
-
 function toggleSelectAll() {
-  if (selected.size === adminItems.length) {
-    selected.clear();
-    document.getElementById('sel-all-btn').textContent = 'Zaznacz wszystkie';
-  } else {
-    adminItems.forEach(i => selected.add(i.id));
-    document.getElementById('sel-all-btn').textContent = 'Odznacz wszystkie';
-  }
-  renderAdminList();
-  updateSelBar();
+  if (selected.size === adminItems.length) { selected.clear(); document.getElementById('sel-all-btn').textContent = 'Zaznacz wszystkie'; }
+  else { adminItems.forEach(i => selected.add(i.id)); document.getElementById('sel-all-btn').textContent = 'Odznacz wszystkie'; }
+  renderAdminList(); updateSelBar();
 }
-
 function updateSelBar() {
-  const bar = document.getElementById('sel-bar');
   document.getElementById('sel-count').textContent = selected.size + ' zaznaczonych';
-  bar.classList.toggle('visible', selected.size > 0);
+  document.getElementById('sel-bar').classList.toggle('visible', selected.size > 0);
 }
-
-async function downloadOne(id) {
-  triggerDownload(BACKEND_URL + `/api/export?id=${id}`);
-}
-
-async function downloadSelected() {
-  if (!selected.size) return;
-  triggerDownload(BACKEND_URL + `/api/export?ids=${[...selected].join(',')}`);
-}
-
-async function downloadAll() {
-  triggerDownload(BACKEND_URL + '/api/export');
-}
-
+async function downloadOne(id) { triggerDownload(BACKEND_URL + `/api/export?id=${id}`); }
+async function downloadSelected() { if (!selected.size) return; triggerDownload(BACKEND_URL + `/api/export?ids=${[...selected].join(',')}`); }
+async function downloadAll() { triggerDownload(BACKEND_URL + '/api/export'); }
 function triggerDownload(url) {
-  const a = document.createElement('a');
-  a.href = url;
-  a.style.display = 'none';
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => a.remove(), 1000);
-}
-
-// ════════════════════════════════════════════════════════
-//  STATS
-// ════════════════════════════════════════════════════════
-
-function showStats() {
-  renderStats();
-  showScreen('screen-stats');
-}
-function showForm() { showScreen('screen-form'); }
-
-function renderStats() {
-  const el = document.getElementById('stats-scroll');
-  const n = responses.length;
-
-  let html = `
-    <div class="stats-grid">
-      <div class="stat-pill"><div class="stat-pill-num">${n}</div><div class="stat-pill-label">Wypełnień</div></div>
-      <div class="stat-pill"><div class="stat-pill-num">${QUESTIONS.filter(q=>q.type!=='section').length}</div><div class="stat-pill-label">Pytań</div></div>
-    </div>
-  `;
-
-  QUESTIONS.forEach(q => {
-    if (q.type === 'section') {
-      html += `<div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin:20px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)">${q.text}</div>`;
-      return;
-    }
-
-    html += `<div class="stat-section"><div class="stat-q-text">${q.text}</div>`;
-
-    if (q.type === 'text' || q.type === 'number') {
-      const vals = responses.map(r => r.answers[q.key]).filter(v => v !== undefined && v !== '');
-      if (!vals.length) {
-        html += `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">Brak odpowiedzi</div>`;
-      } else {
-        html += `<div class="text-answers">`;
-        vals.slice(-6).forEach(t => { html += `<div class="text-answer-item">${t}</div>`; });
-        if (vals.length > 6) html += `<div class="text-answer-item" style="color:var(--muted)">...i ${vals.length-6} więcej</div>`;
-        html += `</div>`;
-      }
-    } else {
-      const opts = q.type === 'yesno' ? ['TAK','NIE'] : (q.options || []);
-      const counts = {};
-      opts.forEach(o => counts[o] = 0);
-      responses.forEach(r => {
-        const a = r.answers[q.key];
-        if (!a) return;
-        if (Array.isArray(a)) a.forEach(v => { if (counts[v] !== undefined) counts[v]++; });
-        else if (counts[a] !== undefined) counts[a]++;
-      });
-      const total = Object.values(counts).reduce((a,b)=>a+b,0);
-      opts.forEach(o => {
-        const pct = total ? Math.round(counts[o]/total*100) : 0;
-        html += `<div class="bar-row">
-          <div class="bar-label">${o.replace(/^\d+\.\d*\.?\s*/,'')}</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${pct}%">
-            ${pct > 10 ? `<span class="bar-pct">${pct}%</span>` : ''}
-          </div></div>
-          <div class="bar-n">${counts[o]}</div>
-        </div>`;
-      });
-      html += `<div class="stat-footer">N = ${total}</div>`;
-    }
-    html += `</div>`;
-  });
-
-  html += `<div class="export-row">
-    <button class="export-btn" onclick="exportCSV()">CSV</button>
-    <button class="export-btn primary" onclick="exportPrint()">Drukuj</button>
-  </div>`;
-
-  el.innerHTML = html;
-}
-
-// ════════════════════════════════════════════════════════
-//  EXPORT
-// ════════════════════════════════════════════════════════
-
-function exportCSV() {
-  if (!responses.length) { toast('Brak danych'); return; }
-  const qs = QUESTIONS.filter(q => q.type !== 'section');
-  const headers = ['id','ts', ...qs.map(q => q.key)];
-  const rows = responses.map(r => [
-    r.id, new Date(r.ts).toLocaleString('pl-PL'),
-    ...qs.map(q => {
-      const a = r.answers[q.key];
-      if (a === undefined || a === '') return '';
-      return Array.isArray(a) ? a.join(' | ') : String(a);
-    })
-  ]);
-  const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(';')).join('\n');
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'kwestionariusz_' + new Date().toISOString().slice(0,10) + '.csv';
-  a.click();
-}
-
-function exportPrint() {
-  if (!responses.length) { toast('Brak danych'); return; }
-  const qs = QUESTIONS.filter(q => q.type !== 'section');
-  const style = `<style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Arial,sans-serif;font-size:11px;color:#111;padding:20px}
-    h1{font-size:16px;margin-bottom:2px}
-    .meta{font-family:monospace;font-size:10px;color:#666;margin-bottom:20px}
-    .card{border:1px solid #ccc;padding:12px;margin-bottom:12px;page-break-inside:avoid}
-    .card-head{font-size:9px;font-family:monospace;color:#888;border-bottom:1px solid #eee;padding-bottom:6px;margin-bottom:8px}
-    .row{margin-bottom:6px}
-    .q{font-weight:bold;font-size:10px;color:#555;margin-bottom:1px}
-    .a{font-size:11px}
-    .sec{font-weight:bold;font-size:11px;margin:14px 0 4px;border-bottom:1px solid #999;padding-bottom:3px}
-  </style>`;
-
-  let body = `<h1>Kwestionariusz osoby w kryzysie bezdomności — rok badania: 2026</h1>
-    <div class="meta">Eksport: ${new Date().toLocaleString('pl-PL')} | Liczba wypełnień: ${responses.length}</div>`;
-
-  responses.forEach((r, ri) => {
-    body += `<div class="card"><div class="card-head">Wypełnienie #${ri+1} — ${new Date(r.ts).toLocaleString('pl-PL')}</div>`;
-    let lastSection = '';
-    QUESTIONS.forEach(q => {
-      if (q.type === 'section') { lastSection = q.text; return; }
-      const a = r.answers[q.key];
-      if (a === undefined || a === '') return;
-      body += `<div class="row"><div class="q">${q.text}</div><div class="a">${Array.isArray(a) ? a.join(', ') : a}</div></div>`;
-    });
-    body += `</div>`;
-  });
-
-  const win = window.open('', '_blank');
-  win.document.write(`<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><title>Kwestionariusz 2026</title>${style}</head><body>${body}</body></html>`);
-  win.document.close();
-  setTimeout(() => win.print(), 400);
+  const a = document.createElement('a'); a.href = url; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); setTimeout(() => a.remove(), 1000);
 }
 
 // ════════════════════════════════════════════════════════
@@ -1550,15 +1291,12 @@ function exportPrint() {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  if (id === 'screen-stats') document.getElementById('stats-scroll').scrollTop = 0;
 }
-
+function showForm() { showScreen('screen-form'); }
 function toast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 2800);
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2800);
 }
 
 // ════════════════════════════════════════════════════════

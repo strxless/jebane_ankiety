@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ankieta</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Epilogue:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --bg2: #f7f7f5;
+  --bg3: #eeede9;
+  --line: #e0deda;
+  --muted: #a0998f;
+  --text: #1a1714;
+  --text2: #6b6560;
+  --accent: #1a1714;
+  --accent2: #333;
+  --red: #d64040;
+  --green: #2a7a52;
+  --sel-bg: #f0f8f4;
+  --sel-line: #2a7a52;
+  --r: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Epilogue', sans-serif;
+  overscroll-behavior: none;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100dvh; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* ── TOP BAR ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.topbar-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.topbar-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.topbar-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text2);
+  background: none;
+  border: 1px solid var(--line);
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.topbar-btn:hover { border-color: var(--text); color: var(--text); }
+
+/* ── PROGRESS ── */
+.progress-wrap {
+  height: 3px;
+  background: var(--line);
+}
+.progress-bar {
+  height: 100%;
+  background: var(--text);
+  transition: width 0.35s ease;
+}
+
+/* ── FORM CONTENT ── */
+.form-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 20px 110px;
+}
+
+.q-block {
+  margin-bottom: 36px;
+  animation: fadeUp 0.2s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.q-block.hidden { display: none; }
+
+.q-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.q-label .q-num {
+  background: var(--bg3);
+  border: 1px solid var(--line);
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-size: 10px;
+  color: var(--text2);
+}
+.q-label .req { color: var(--red); }
+.q-label .cond-tag {
+  color: #7a6200;
+  border: 1px solid #e8d88a;
+  background: #fffbeb;
+  padding: 1px 7px;
+  border-radius: 3px;
+  font-size: 9px;
+}
+
+.q-text {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.45;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+/* ── OPTIONS ── */
+.options { display: flex; flex-direction: column; gap: 8px; }
+
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--bg);
+  font-size: 15px;
+  user-select: none;
+}
+.opt:active { background: var(--bg2); }
+.opt:hover { border-color: #c0bbb5; }
+.opt.selected { border-color: var(--sel-line); background: var(--sel-bg); }
+.opt.selected .opt-marker { background: var(--sel-line); border-color: var(--sel-line); color: white; }
+
+.opt-marker {
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--line);
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  transition: all 0.15s;
+  color: transparent;
+}
+.opt-marker.square { border-radius: 4px; }
+.opt-label { flex: 1; }
+
+/* yesno */
+.yesno-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.yesno-btn {
+  padding: 20px 10px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--r);
+  background: var(--bg);
+  cursor: pointer;
+  text-align: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text2);
+  transition: all 0.15s;
+  user-select: none;
+  letter-spacing: 0.03em;
+}
+.yesno-btn:hover { border-color: #c0bbb5; }
+.yesno-btn.yes.selected { border-color: var(--green); background: #f0faf5; color: var(--green); }
+.yesno-btn.no.selected { border-color: var(--red); background: #fdf2f2; color: var(--red); }
+
+/* scale */
+.scale-row { display: flex; gap: 8px; }
+.scale-btn {
+  flex: 1;
+  aspect-ratio: 1;
+  border: 1.5px solid var(--line);
+  border-radius: var(--r);
+  background: var(--bg);
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  font-size: 17px;
+  color: var(--text2);
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+.scale-btn:hover { border-color: #c0bbb5; color: var(--text); }
+.scale-btn.selected { border-color: var(--text); background: var(--text); color: white; }
+.scale-labels { display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 8px; text-transform: uppercase; letter-spacing: 0.07em; }
+
+/* text */
+.q-textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r);
+  color: var(--text);
+  font-family: 'Epilogue', sans-serif;
+  font-size: 15px;
+  padding: 14px 16px;
+  resize: none;
+  min-height: 100px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.q-textarea:focus { border-color: var(--text); }
+.q-textarea::placeholder { color: var(--muted); }
+
+/* ── BOTTOM BAR ── */
+.bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  padding: 14px 20px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line);
+  z-index: 10;
+}
+.submit-btn {
+  width: 100%;
+  padding: 17px;
+  background: var(--text);
+  color: white;
+  border: none;
+  border-radius: var(--r);
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+}
+.submit-btn:hover { background: var(--accent2); }
+.submit-btn:active { transform: scale(0.99); }
+.submit-btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
+
+/* ── THANK YOU SCREEN ── */
+#screen-thanks {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  background: var(--bg);
+}
+.thanks-icon {
+  width: 72px;
+  height: 72px;
+  background: var(--text);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 24px;
+  animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes pop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.thanks-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.thanks-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 48px;
+}
+.next-btn {
+  width: 100%;
+  max-width: 360px;
+  padding: 19px;
+  background: var(--text);
+  color: white;
+  border: none;
+  border-radius: var(--r);
+  font-family: 'Syne', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  transition: all 0.15s;
+}
+.next-btn:hover { background: var(--accent2); }
+.next-btn:active { transform: scale(0.98); }
+.stats-link {
+  display: block;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  padding: 10px;
+  transition: color 0.15s;
+}
+.stats-link:hover { color: var(--text); }
+
+/* ── STATS SCREEN ── */
+#screen-stats { flex-direction: column; }
+.stats-scroll { flex: 1; overflow-y: auto; padding: 20px 20px 40px; }
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.stat-pill {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 18px 14px;
+  text-align: center;
+}
+.stat-pill-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-pill-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.stat-section {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 18px;
+  margin-bottom: 12px;
+}
+.stat-q-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+.bar-label { font-size: 12px; min-width: 64px; max-width: 110px; word-break: break-word; color: var(--text); flex-shrink: 0; line-height: 1.3; }
+.bar-track { flex: 1; height: 20px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.bar-fill {
+  height: 100%;
+  background: var(--text);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  padding-left: 7px;
+  transition: width 0.5s ease;
+  min-width: 2px;
+}
+.bar-pct { font-family: 'DM Mono', monospace; font-size: 9px; color: white; font-weight: 500; }
+.bar-n { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); min-width: 24px; text-align: right; }
+.text-answers { display: flex; flex-direction: column; gap: 6px; }
+.text-answer-item {
+  background: var(--bg2);
+  border-radius: 5px;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: var(--text2);
+  border-left: 2px solid var(--line);
+}
+.stat-footer { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 10px; }
+.export-row { display: flex; gap: 10px; margin-top: 20px; }
+.export-btn {
+  flex: 1;
+  padding: 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--r);
+  background: none;
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.export-btn:hover { border-color: var(--text); color: var(--text); }
+.export-btn.primary { background: var(--text); color: white; border-color: var(--text); font-family: 'Syne', sans-serif; font-weight: 700; }
+.export-btn.primary:hover { background: var(--accent2); }
+
+/* ── BANNERS ── */
+.info-banner {
+  display: none;
+  margin: 0 0 24px;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.info-banner.duplicate {
+  background: #fff3cd;
+  border: 1.5px solid #f0c040;
+  color: #7a5000;
+}
+.info-banner.odmowa {
+  background: #fde8e8;
+  border: 1.5px solid #e08080;
+  color: #7a1a1a;
+}
+.info-banner-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+/* ── SECTION HEADER ── */
+.q-section {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: white;
+  background: var(--text);
+  padding: 10px 16px;
+  margin: 8px -20px 24px;
+  width: calc(100% + 40px);
+}
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 90px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--red);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  opacity: 0;
+  transition: all 0.25s;
+  pointer-events: none;
+  z-index: 99;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── ADMIN SCREEN ── */
+.admin-scroll { flex: 1; overflow-y: auto; padding: 20px 20px 40px; }
+.admin-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.response-list { display: flex; flex-direction: column; gap: 8px; }
+.response-item {
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.response-item-check {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  font-size: 12px;
+}
+.response-item-check.checked { background: var(--text); border-color: var(--text); color: white; }
+.response-item-info { flex: 1; min-width: 0; }
+.response-item-id {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text);
+}
+.response-item-ts {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.response-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.admin-empty {
+  text-align: center;
+  padding: 48px 20px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.admin-sel-bar {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--text);
+  color: white;
+  border-radius: var(--r);
+  margin-bottom: 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+}
+.admin-sel-bar.visible { display: flex; }
+.admin-sel-bar button {
+  background: white;
+  color: var(--text);
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-left: auto;
+}
+.spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid var(--line);
+  border-top-color: var(--text);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════
+  SCREEN: FORM
+══════════════════════════════════════ -->
+<div class="screen active" id="screen-form">
+  <div class="topbar">
+    <div class="topbar-logo">Ankieta</div>
+    <div class="topbar-count" id="resp-count">— odpowiedzi</div>
+    <div style="display:flex;gap:8px"><button class="topbar-btn" onclick="showStats()">Dane</button><button class="topbar-btn" onclick="showAdmin()">⬇ Pobierz</button></div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+  </div>
+
+  <div class="form-scroll" id="form-scroll">
+    <div id="duplicate-banner" class="info-banner duplicate" style="display:none">
+      <div class="info-banner-title">⚠ Duplikat — zatrzymaj wywiad</div>
+      Wywiad był już przeprowadzony z tą osobą dzisiaj. Nie należy rozpoczynać kolejnego wywiadu. Zaznacz duplikat i zakończ.
+    </div>
+    <div id="odmowa-banner" class="info-banner odmowa" style="display:none">
+      <div class="info-banner-title">ℹ Odmowa udziału</div>
+      Osoba odmówiła udziału w badaniu. Wypełnij wyłącznie płeć i wiek (oraz szacowany wiek jeśli kontakt utrudniony). Następnie podaj funkcję ankietera i wyślij.
+    </div>
+    <!-- Questions rendered by JS -->
+  </div>
+
+  <div class="bottom-bar">
+    <button class="submit-btn" id="submit-btn" onclick="submitForm()">Wyślij odpowiedzi →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+  SCREEN: THANK YOU
+══════════════════════════════════════ -->
+<div class="screen" id="screen-thanks">
+  <div class="thanks-icon">✓</div>
+
+  <div class="thanks-title">Dziękujemy!</div>
+  <div class="thanks-sub" id="thanks-sub">Odpowiedź #1 zapisana</div>
+  <button class="next-btn" onclick="startNext()">Następna osoba →</button>
+  <span class="stats-link" onclick="showStats()">Podgląd danych</span>
+</div>
+
+<!-- ══════════════════════════════════════
+  SCREEN: STATS
+══════════════════════════════════════ -->
+<div class="screen" id="screen-stats">
+  <div class="topbar">
+    <div class="topbar-logo">Dane</div>
+    <div></div>
+    <button class="topbar-btn" onclick="showForm()">← Wróć</button>
+  </div>
+  <div class="stats-scroll" id="stats-scroll">
+    <!-- rendered by JS -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+  SCREEN: ADMIN / DOWNLOAD
+══════════════════════════════════════ -->
+<div class="screen" id="screen-admin">
+  <div class="topbar">
+    <div class="topbar-logo">Pobierz</div>
+    <div class="topbar-count" id="admin-total">—</div>
+    <button class="topbar-btn" onclick="showForm()">← Wróć</button>
+  </div>
+  <div class="admin-scroll">
+
+    <div class="admin-sel-bar" id="sel-bar">
+      <span id="sel-count">0 zaznaczonych</span>
+      <button onclick="downloadSelected()">⬇ Pobierz zaznaczone (.zip)</button>
+    </div>
+
+    <div class="admin-toolbar">
+      <button class="export-btn primary" onclick="downloadAll()" style="flex:none;padding:12px 18px">
+        ⬇ Pobierz wszystkie (.zip)
+      </button>
+      <button class="export-btn" onclick="toggleSelectAll()" id="sel-all-btn" style="flex:none;padding:12px 18px">
+        Zaznacz wszystkie
+      </button>
+      <button class="export-btn" onclick="loadAdmin()" id="refresh-btn" style="flex:none;padding:12px 14px">
+        ↻
+      </button>
+    </div>
+
+    <div class="response-list" id="response-list">
+      <div class="admin-empty">Ładowanie...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  ██████╗ ██╗   ██╗███████╗███████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
+//  ██╔══██╗██║   ██║██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+//  ██║  ██║ ██║ ██║ ██████╗ ███████╗   ██║   ██║██║   ██║██╔██╗ ██║███████╗
+//  ██║  ██║  ██╔╝  ██╔════╝ ╚════██║   ██║   ██║██║   ██║██║╚██╗██║╚════██║
+//  ██████╔╝   ██║   ███████╗███████║   ██║   ██║╚██████╔╝██║ ╚████║███████║
+//  ╚═════╝    ╚═╝   ╚══════╝╚══════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+//
+//  EDIT QUESTIONS BELOW. Types: 'radio' | 'checkbox' | 'yesno' | 'scale' | 'text'
+//  For conditional: condition: { questionIndex: 0, answer: 'TAK' }
+// ════════════════════════════════════════════════════════
+
+const FORM_TITLE = "Kwestionariusz bezdomności 2026";
+
+// key = field id used in submitted JSON object
+// Types: 'radio' | 'checkbox' | 'yesno' | 'text' | 'number' | 'section'
+// condition: { key: 'field_key', answer: 'value' }  — show only if that field equals value
+// For checkbox conditions answer can be checked with includes
+
+const QUESTIONS = [
+
+  // ── WSTĘP ──────────────────────────────────────────────
+  { key: "s_wstep", type: "section", text: "Wstęp" },
+
+  {
+    key: "wywiad_dzisiaj",
+    text: "Czy był przeprowadzony z Panią/Panem taki wywiad dzisiaj?",
+    type: "yesno", required: true,
+  },
+  {
+    key: "zgoda_udzial",
+    text: "Czy zgadza się Pan/i na udział w badaniu?",
+    type: "yesno", required: true,
+  },
+  {
+    key: "sposob_wypelnienia",
+    text: "Sposób wypełnienia:",
+    type: "radio", required: true,
+    options: ["Pełny", "Skrócony"],
+  },
+  {
+    key: "duplikat",
+    text: "Jeśli to duplikat — zaznacz:",
+    type: "yesno", required: false,
+  },
+
+  // ── MIEJSCE ─────────────────────────────────────────────
+  { key: "s_miejsce", type: "section", text: "Miejsce przebywania osoby w kryzysie bezdomności" },
+
+  {
+    key: "miasto_powyzej_100k",
+    text: "Czy miasto powyżej 100 tysięcy mieszkańców?",
+    type: "yesno", required: true,
+  },
+  {
+    key: "miejsce_pobytu",
+    text: "Miejsce pobytu (zaznacz odpowiednie):",
+    type: "radio", required: true,
+    options: [
+      "1. Noclegownia",
+      "2. Ogrzewalnia",
+      "3. Schronisko dla osób bezdomnych",
+      "4. Schronisko dla osób bezdomnych z usługami opiekuńczymi",
+      "5. Mieszkanie wspomagane",
+      "6. Mieszkanie treningowe",
+      "7. Dom dla matek z małoletnimi dziećmi i kobiet w ciąży",
+      "8. Ośrodek interwencji kryzysowej",
+      "9. Specjalistyczny ośrodek wsparcia dla osób doznających przemocy domowej",
+      "10. Szpital, hospicjum, ZOL, inna placówka zdrowia",
+      "11. Zakład karny, areszt śledczy",
+      "12. Izba wytrzeźwień, pogotowie socjalne",
+      "13. Instytucja zdrowia psychicznego / leczenia uzależnień",
+      "14. Inna placówka / miejsce mieszkalne",
+      "15. Pustostan",
+      "16. Domek na działce, altana działkowa",
+      "17. Miejsce niemieszkalne: ulica, klatka schodowa, dworzec PKP/PKS, altana śmietnikowa, piwnica, itp.",
+    ],
+  },
+  {
+    key: "miejsce_nazwa",
+    text: "Nazwa / opis miejsca pobytu:",
+    type: "text", required: false,
+    placeholder: "Wpisz nazwę lub opis miejsca...",
+  },
+
+  // ── PYTANIA ─────────────────────────────────────────────
+  { key: "s_pytania", type: "section", text: "Pytania" },
+
+  // P1 – Płeć
+  {
+    key: "p1_plec",
+    text: "1. Płeć:",
+    type: "radio", required: true,
+    options: ["1.1. Kobieta", "1.2. Mężczyzna"],
+  },
+
+  // P2 – Wiek
+  {
+    key: "p2_wiek_liczba",
+    text: "2. Wiek (liczba lat, może być szacowany):",
+    type: "number", required: true,
+    placeholder: "np. 45",
+  },
+  {
+    key: "p2_wiek_typ",
+    text: "2. Typ wieku:",
+    type: "radio", required: true,
+    options: ["Wiek deklarowany", "Wiek oszacowany"],
+  },
+  {
+    key: "p2_wiek_kategoria",
+    text: "2. Kategoria wieku:",
+    type: "radio", required: true,
+    options: ["Osoba dorosła (pow. 18 lat)", "Dziecko (0–17 lat)"],
+  },
+
+  // P3 – Obywatelstwo
+  {
+    key: "p3_obywatelstwo",
+    text: "3.1. Obywatelstwo:",
+    type: "radio", required: true,
+    options: [
+      "Polskie",
+      "Ukraińskie",
+      "Inne z Europy (wyłączając Ukrainę)",
+      "Inne z Azji",
+      "Inne z Afryki",
+      "Inne pozostałe lub brak",
+    ],
+  },
+  {
+    key: "p3_status_cudzoziemca",
+    text: "3.2. Status cudzoziemca:",
+    type: "radio", required: false,
+    options: ["Uchodźcy", "Ochrona tymczasowa", "Stały pobyt", "Nieuregulowany"],
+  },
+
+  // P4 – Zameldowanie
+  {
+    key: "p4_zameldowanie",
+    text: "4. Czy posiada Pan(i) zameldowanie na pobyt stały?",
+    type: "radio", required: true,
+    options: [
+      "4.1. Tak, w gminie obecnego pobytu",
+      "4.2. Tak, poza gminą obecnego pobytu",
+      "4.3. Nie, ostatnie zameldowanie było w gminie obecnego pobytu",
+      "4.4. Nie, ostatnie zameldowanie było poza gminą obecnego pobytu",
+    ],
+  },
+
+  // P5 – Czas bezdomności
+  {
+    key: "p5_czas_bezdomnosci",
+    text: "5. Jak długo doświadcza Pan/i bezdomności?",
+    type: "radio", required: true,
+    options: [
+      "5.1. Do 3 miesięcy",
+      "5.2. Od 3 do 6 miesięcy",
+      "5.3. Od 6 do 12 miesięcy",
+      "5.4. Od 12 do 24 miesięcy",
+      "5.5. Od 2 do 5 lat",
+      "5.6. Od 5 do 10 lat",
+      "5.7. Od 10 lat do 20 lat",
+      "5.8. Powyżej 20 lat",
+    ],
+  },
+
+  // P6 – Stan cywilny
+  {
+    key: "p6_stan_cywilny",
+    text: "6. Stan cywilny:",
+    type: "radio", required: true,
+    options: [
+      "6.1. Kawaler/panna",
+      "6.2. Żonaty/zamężna",
+      "6.3. Rozwiedziony/rozwiedziona",
+      "6.4. Wdowiec/wdowa",
+      "6.5. W wolnym związku",
+      "6.6. W separacji",
+    ],
+  },
+
+  // P7 – Wykształcenie
+  {
+    key: "p7_wyksztalcenie",
+    text: "7. Wykształcenie:",
+    type: "radio", required: true,
+    options: [
+      "7.1. Niepełne podstawowe",
+      "7.2. Podstawowe",
+      "7.3. Gimnazjalne",
+      "7.4. Zawodowe",
+      "7.5. Średnie (techniczne też)",
+      "7.6. Wyższe",
+      "7.7. Nie wiem",
+    ],
+  },
+
+  // P8 – Z kim gospodaruje
+  {
+    key: "p8_gospodarstwo",
+    text: "8. Z kim obecnie Pani/Pan gospodaruje:",
+    type: "radio", required: true,
+    options: [
+      "8.1. Samodzielnie/samotnie",
+      "8.2. Partner/partnerka",
+      "8.3. Kolega/koleżanka/znajomy/znajoma",
+      "8.4. Małoletnie dzieci (0–17 lat)",
+      "8.5. Dorosłe dzieci / członkowie dalszej rodziny",
+      "8.6. Zbiorowo / w grupie",
+    ],
+  },
+
+  // P9 – Źródła dochodu
+  {
+    key: "p9_dochody",
+    text: "9. Jakie źródła dochodu Pan(i) posiada? (można zaznaczyć dowolną liczbę):",
+    type: "checkbox", required: false,
+    options: [
+      "9.1. Zatrudnienie",
+      "9.2. Praca na czarno",
+      "9.3. Praca chroniona / zatrudnienie wspierane",
+      "9.4. Zbieractwo",
+      "9.5. Zasiłek z pomocy społecznej",
+      "9.6. Świadczenia ZUS",
+      "9.7. Żebractwo",
+      "9.8. Alimenty",
+      "9.9. Renta/emerytura",
+      "9.10. Nie posiadam dochodu",
+      "9.11. Odmowa odpowiedzi",
+    ],
+  },
+
+  // P10 – Przyczyny bezdomności
+  {
+    key: "p10_przyczyny",
+    text: "10. Które wydarzenia były według Pana(i) przyczyną bezdomności? (proszę zaznaczyć maksymalnie 3):",
+    type: "checkbox", required: false,
+    maxSelect: 3,
+    options: [
+      "10.1. Konflikt rodzinny",
+      "10.2. Odejście/śmierć rodzica/opiekuna w dzieciństwie",
+      "10.3. Przemoc domowa",
+      "10.4. Rozpad związku",
+      "10.5. Zadłużenie",
+      "10.6. Bezrobocie, brak pracy, utrata pracy",
+      "10.7. Problemy wynikające z orientacji seksualnej",
+      "10.8. Zły stan zdrowia, niepełnosprawność",
+      "10.9. Eksmisja, wymeldowanie z mieszkania",
+      "10.10. Uzależnienie od alkoholu",
+      "10.11. Uzależnienie od narkotyków",
+      "10.12. Uzależnienie od hazardu",
+      "10.13. Migracja / wyjazd na stałe do innego kraju",
+      "10.14. Choroba/zaburzenia psychiczne inne niż uzależnienia",
+      "10.15. Opuszczenie placówki opiekuńczo-wychowawczej",
+      "10.16. Opuszczenie zakładu karnego",
+      "10.17. Konflikt z prawem",
+      "10.18. Inna przemoc niż domowa",
+      "10.19. Problemy wynikające ze zmiany wiary",
+      "10.20. Odmowa odpowiedzi",
+    ],
+  },
+
+  // P11 – Pomoc
+  {
+    key: "p11_pomoc",
+    text: "11. Czy Pan(i) korzysta z pomocy i w jakiej postaci? (proszę zaznaczyć wszystkie formy):",
+    type: "checkbox", required: false,
+    options: [
+      "11.1. Wsparcie finansowe",
+      "11.2. Posiłek",
+      "11.3. Odzież",
+      "11.4. Schronienie",
+      "11.5. Terapia uzależnień",
+      "11.6. Opieka zdrowotna",
+      "11.7. Nie korzystam",
+    ],
+  },
+
+  // P12 – Oczekiwane wsparcie
+  {
+    key: "p12_oczekiwane_wsparcie",
+    text: "12. W jakich obszarach oczekuje Pan(i) wsparcia/pomocy? (należy zaznaczyć maksymalnie 3 potrzeby):",
+    type: "checkbox", required: false,
+    maxSelect: 3,
+    options: [
+      "12.1. Żywnościowe",
+      "12.2. Higieniczne (w tym dostęp do łaźni)",
+      "12.3. Zdrowotne",
+      "12.4. Schronienie",
+      "12.5. Terapia uzależnień",
+      "12.6. Wsparcie psychologiczne",
+      "12.7. Pomoc prawna",
+      "12.8. Pomoc w znalezieniu pracy",
+      "12.9. Finansowe",
+      "12.10. Mieszkaniowe",
+      "12.11. Wyjście z długów",
+      "12.12. Nie oczekuję pomocy",
+    ],
+  },
+
+  // P13 – Bezdomność ukryta
+  { key: "s_bezdomnosc_ukryta", type: "section", text: "13. Pytania o tzw. bezdomność ukrytą" },
+
+  {
+    key: "p13_1_czy_pomieszkuje",
+    text: "13.1. Czy obecnie Pan(i) pomieszkuje w domu/mieszkaniu u rodziny, znajomych, czy innych osób, tj. nie ma Pan(i) własnego miejsca zamieszkania i przebywa tymczasowo u innych osób?",
+    type: "yesno", required: true,
+  },
+  {
+    key: "p13_1_2_jak_dlugo",
+    text: "13.1.2. Jak długo obecnie Pan(i) pomieszkuje w domu/mieszkaniu u rodziny, znajomych, innych osób nie mając własnego miejsca zamieszkania?",
+    type: "radio", required: false,
+    condition: { key: "p13_1_czy_pomieszkuje", answer: "TAK" },
+    options: [
+      "Do 3 miesięcy",
+      "Od 3 do 12 miesięcy",
+      "Od 1 roku do 2 lat",
+      "Od 2 do 5 lat",
+      "Powyżej 5 lat",
+    ],
+  },
+  {
+    key: "p13_2_czy_pomieszkiwal",
+    text: "13.2. Czy w przeszłości Pan(i) tymczasowo pomieszkiwał(a) w domu/mieszkaniu u rodziny, znajomych, czy innych osób, nie mając własnego miejsca zamieszkania?",
+    type: "yesno", required: true,
+  },
+  {
+    key: "p13_2_jak_dlugo",
+    text: "13.2. Jak długo tymczasowo Pan(i) pomieszkiwał(a) w domu/mieszkaniu u rodziny, znajomych, innych osób, nie mając własnego miejsca zamieszkania?",
+    type: "radio", required: false,
+    condition: { key: "p13_2_czy_pomieszkiwal", answer: "TAK" },
+    options: [
+      "Do 3 miesięcy",
+      "Od 3 do 12 miesięcy",
+      "Od 1 roku do 2 lat",
+      "Od 2 do 5 lat",
+      "Powyżej 5 lat",
+    ],
+  },
+  {
+    key: "p13_3_czy_zna",
+    text: "13.3. Czy zna Pan(i) inne osoby, które w ciągu ostatnich 12 miesięcy tymczasowo pomieszkiwały w domu/mieszkaniu u rodziny, czy znajomych, innych osób, nie mając własnego miejsca zamieszkania?",
+    type: "yesno", required: true,
+  },
+  {
+    key: "p13_3_ile_osob",
+    text: "13.3. Jeśli Tak, ile Pan(i) zna takich osób?",
+    type: "radio", required: false,
+    condition: { key: "p13_3_czy_zna", answer: "TAK" },
+    options: ["1–2", "3–5", "6–10", "Więcej niż 10"],
+  },
+
+  // ── FUNKCJA ANKIETERA ────────────────────────────────────
+  { key: "s_ankieter", type: "section", text: "Funkcja ankietera" },
+
+  {
+    key: "funkcja_ankietera",
+    text: "Funkcja ankietera:",
+    type: "radio", required: true,
+    options: [
+      "Wolontariusz",
+      "Pracownik socjalny",
+      "Pracownik placówki dla bezdomnych",
+      "Inna",
+      "Pracownik gminy",
+      "Strażnik miejski / policjant",
+      "Pracownik do spraw streetworkingu (Streetworker)",
+    ],
+  },
+];
+
+// ════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════
+
+const STORE = 'ankieta_bezdomnosc_v1';
+let responses = [];
+let answers = {}; // keyed by q.key
+
+function loadData() {
+  try { responses = JSON.parse(localStorage.getItem(STORE)) || []; } catch(e) { responses = []; }
+}
+function saveData() {
+  try { localStorage.setItem(STORE, JSON.stringify(responses)); } catch(e) {}
+}
+loadData();
+
+// ════════════════════════════════════════════════════════
+//  RENDER FORM
+// ════════════════════════════════════════════════════════
+
+function renderForm() {
+  answers = {};
+  const container = document.getElementById('form-scroll');
+  container.innerHTML = '';
+
+  QUESTIONS.forEach((q, i) => {
+    if (q.type === 'section') {
+      const sec = document.createElement('div');
+      sec.className = 'q-section';
+      sec.id = 'qblock_' + q.key;
+      sec.textContent = q.text;
+      container.appendChild(sec);
+      return;
+    }
+
+    const isConditional = !!q.condition;
+    const block = document.createElement('div');
+    block.className = 'q-block' + (isConditional ? ' hidden' : '');
+    block.id = 'qblock_' + q.key;
+
+    const condTag = isConditional ? `<span class="cond-tag">⚡ warunkowe</span>` : '';
+    const maxTag = q.maxSelect ? `<span class="cond-tag" style="color:#555;border-color:#ccc;background:#f5f5f5">max ${q.maxSelect}</span>` : '';
+
+    block.innerHTML = `
+      <div class="q-label">
+        ${q.required ? '<span class="req">wymagane</span>' : ''}
+        ${condTag}${maxTag}
+      </div>
+      <div class="q-text">${q.text}</div>
+      <div class="q-answer" id="qa_${q.key}">${renderAnswerUI(q)}</div>
+    `;
+    container.appendChild(block);
+  });
+
+  updateProgress();
+  updateRespCount();
+}
+
+function renderAnswerUI(q) {
+  const k = q.key;
+  if (q.type === 'yesno') {
+    return `<div class="yesno-row">
+      <button class="yesno-btn yes" data-key="${k}" data-val="TAK" data-type="yesno">TAK</button>
+      <button class="yesno-btn no"  data-key="${k}" data-val="NIE" data-type="yesno">NIE</button>
+    </div>`;
+  }
+  if (q.type === 'radio') {
+    return `<div class="options">${q.options.map(o => {
+      const safe = o.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+      return `<div class="opt" data-key="${k}" data-val="${safe}" data-type="radio">
+        <div class="opt-marker"></div>
+        <div class="opt-label">${o}</div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+  if (q.type === 'checkbox') {
+    return `<div class="options">${q.options.map(o => {
+      const safe = o.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+      return `<div class="opt" data-key="${k}" data-val="${safe}" data-type="checkbox" data-max="${q.maxSelect||99}">
+        <div class="opt-marker square"></div>
+        <div class="opt-label">${o}</div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+  if (q.type === 'text') {
+    return `<textarea class="q-textarea" data-key="${k}"
+      placeholder="${(q.placeholder||'Wpisz odpowiedź...').replace(/"/g,'&quot;')}"></textarea>`;
+  }
+  if (q.type === 'number') {
+    return `<input class="q-textarea" type="number" inputmode="numeric" data-key="${k}"
+      placeholder="${(q.placeholder||'Wpisz liczbę...').replace(/"/g,'&quot;')}" min="0" max="120"
+      style="min-height:0;padding:14px 16px;">`;
+  }
+  return '';
+}
+
+// Event delegation — handles all option clicks and input changes
+document.addEventListener('click', function(e) {
+  const el = e.target.closest('[data-type]');
+  if (!el) return;
+  const type = el.dataset.type;
+  const key  = el.dataset.key;
+  const val  = el.dataset.val;
+  if (type === 'radio' || type === 'yesno') {
+    setAnswer(key, val, el, type);
+  } else if (type === 'checkbox') {
+    toggleCheck(key, val, el, parseInt(el.dataset.max) || 99);
+  }
+});
+document.addEventListener('input', function(e) {
+  const el = e.target;
+  if (el.dataset.key && (el.tagName === 'TEXTAREA' || el.type === 'number' || el.type === 'text')) {
+    answers[el.dataset.key] = el.value.trim();
+    updateProgress();
+  }
+});
+
+// ════════════════════════════════════════════════════════
+//  INTERACTIONS
+// ════════════════════════════════════════════════════════
+
+function setAnswer(key, val, el, type) {
+  answers[key] = val;
+  const container = document.getElementById('qa_' + key);
+  if (type === 'radio') {
+    container.querySelectorAll('.opt').forEach(e => {
+      e.classList.remove('selected');
+      const m = e.querySelector('.opt-marker');
+      if (m) m.textContent = '';
+    });
+    el.classList.add('selected');
+    const m = el.querySelector('.opt-marker');
+    if (m) m.textContent = '✓';
+  }
+  if (type === 'yesno') {
+    container.querySelectorAll('.yesno-btn').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  checkConditions();
+  updateProgress();
+}
+
+function toggleCheck(key, val, el, maxSel) {
+  if (!answers[key]) answers[key] = [];
+  const idx = answers[key].indexOf(val);
+  const m = el.querySelector('.opt-marker');
+  if (idx === -1) {
+    if (answers[key].length >= maxSel) {
+      toast(`Możesz wybrać maksymalnie ${maxSel} opcje`);
+      return;
+    }
+    answers[key].push(val);
+    el.classList.add('selected');
+    if (m) m.textContent = '✓';
+  } else {
+    answers[key].splice(idx, 1);
+    el.classList.remove('selected');
+    if (m) m.textContent = '';
+  }
+  updateProgress();
+}
+
+// ── GLOBAL VISIBILITY RULES ─────────────────────────────
+//
+//  wywiad_dzisiaj = TAK  → DUPLICATE: show nothing past wstep, show banner
+//  zgoda_udzial   = NIE  → ODMOWA: only płeć + wiek + funkcja ankietera
+//  sposob_wypelnienia = Skrócony → SKRÓCONY: skip section 13
+//  otherwise → PEŁNY
+//
+const ALWAYS_KEYS = new Set([
+  's_wstep','wywiad_dzisiaj','zgoda_udzial','sposob_wypelnienia','duplikat'
+]);
+const ODMOWA_KEYS = new Set([
+  's_wstep','wywiad_dzisiaj','zgoda_udzial','sposob_wypelnienia','duplikat',
+  's_pytania','p1_plec','p2_wiek_liczba','p2_wiek_typ','p2_wiek_kategoria',
+  's_ankieter','funkcja_ankietera'
+]);
+const SKROCONY_HIDDEN = new Set([
+  's_bezdomnosc_ukryta',
+  'p13_1_czy_pomieszkuje','p13_1_2_jak_dlugo',
+  'p13_2_czy_pomieszkiwal','p13_2_jak_dlugo',
+  'p13_3_czy_zna','p13_3_ile_osob',
+]);
+
+function getMode() {
+  if (answers['wywiad_dzisiaj'] === 'TAK') return 'duplicate';
+  if (answers['zgoda_udzial']   === 'NIE') return 'odmowa';
+  if (answers['sposob_wypelnienia'] === 'Skrócony') return 'skrocony';
+  return 'pelny';
+}
+
+function isVisible(q) {
+  const mode = getMode();
+  const key  = q.key;
+  if (mode === 'duplicate') return ALWAYS_KEYS.has(key);
+  if (mode === 'odmowa')    return ODMOWA_KEYS.has(key);
+  if (mode === 'skrocony' && SKROCONY_HIDDEN.has(key)) return false;
+  if (q.condition) return answers[q.condition.key] === q.condition.answer;
+  return true;
+}
+
+function checkConditions() {
+  const mode = getMode();
+  const dupBanner = document.getElementById('duplicate-banner');
+  if (dupBanner) dupBanner.style.display = mode === 'duplicate' ? '' : 'none';
+  const odmBanner = document.getElementById('odmowa-banner');
+  if (odmBanner) odmBanner.style.display = mode === 'odmowa' ? '' : 'none';
+
+  QUESTIONS.forEach(q => {
+    const block = document.getElementById('qblock_' + q.key);
+    if (!block) return;
+    if (isVisible(q)) {
+      block.classList.remove('hidden');
+    } else {
+      block.classList.add('hidden');
+      if (q.type === 'section') return;
+      delete answers[q.key];
+      const qa = document.getElementById('qa_' + q.key);
+      if (!qa) return;
+      qa.querySelectorAll('.opt').forEach(e => {
+        e.classList.remove('selected');
+        const m = e.querySelector('.opt-marker');
+        if (m) m.textContent = '';
+      });
+      qa.querySelectorAll('.yesno-btn').forEach(e => e.classList.remove('selected'));
+      qa.querySelectorAll('textarea, input').forEach(e => e.value = '');
+    }
+  });
+}
+
+function updateProgress() {
+  const actionable = QUESTIONS.filter(q => q.type !== 'section' && isVisible(q));
+  const required = actionable.filter(q => q.required);
+  const answeredRequired = required.filter(q => {
+    const a = answers[q.key];
+    return a !== undefined && a !== '' && !(Array.isArray(a) && !a.length);
+  }).length;
+  const pct = required.length ? (answeredRequired / required.length) * 100 : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function updateRespCount() {
+  document.getElementById('resp-count').textContent =
+    responses.length + ' ' + plural(responses.length, 'wypełnienie', 'wypełnienia', 'wypełnień');
+}
+
+function plural(n, a, b, c) {
+  if (n === 1) return a;
+  if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return b;
+  return c;
+}
+
+// ════════════════════════════════════════════════════════
+//  SUBMIT
+// ════════════════════════════════════════════════════════
+
+function submitForm() {
+  const missing = [];
+  QUESTIONS.forEach(q => {
+    if (q.type === 'section' || !q.required || !isVisible(q)) return;
+    const a = answers[q.key];
+    if (a === undefined || a === '' || (Array.isArray(a) && !a.length)) {
+      missing.push(q.key);
+    }
+  });
+
+  if (missing.length) {
+    toast('Uzupełnij wymagane pola (' + missing.length + ')');
+    const firstBlock = document.getElementById('qblock_' + missing[0]);
+    if (firstBlock) firstBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const record = {
+    id: Date.now(),
+    ts: new Date().toISOString(),
+    answers: { ...answers },
+  };
+  responses.push(record);
+  saveData();
+
+  // ── POST TO BACKEND ──────────────────────────────────────
+  // Change BACKEND_URL to your FastAPI server address
+  const BACKEND_URL = '';  // empty = same origin (Vercel). For local dev: 'http://localhost:8000'
+  fetch(BACKEND_URL + '/api/responses', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(record),
+  })
+  .then(r => r.ok ? r.json() : Promise.reject(r.status))
+  .then(data => console.log('Saved to backend, db_id:', data.db_id))
+  .catch(err => console.warn('Backend unavailable, saved locally only:', err));
+
+  document.getElementById('thanks-sub').textContent = 'Wypełnienie #' + responses.length + ' zapisane';
+  showScreen('screen-thanks');
+}
+
+function startNext() {
+  
+// ════════════════════════════════════════════════════════
+//  ADMIN — DOWNLOAD PANEL
+// ════════════════════════════════════════════════════════
+
+let adminItems = [];      // [{id, ts, created}]
+let selected   = new Set();
+
+async function showAdmin() {
+  showScreen('screen-admin');
+  await loadAdmin();
+}
+
+async function loadAdmin() {
+  const list = document.getElementById('response-list');
+  list.innerHTML = '<div class="admin-empty"><span class="spinner"></span>Ładowanie...</div>';
+  selected.clear();
+  updateSelBar();
+
+  try {
+    const r = await fetch(BACKEND_URL + '/api/responses');
+    if (!r.ok) throw new Error(await r.text());
+    const data = await r.json();
+    adminItems = data.items || [];
+    document.getElementById('admin-total').textContent =
+      adminItems.length + ' ' + plural(adminItems.length, 'wypełnienie', 'wypełnienia', 'wypełnień');
+    renderAdminList();
+  } catch(e) {
+    list.innerHTML = '<div class="admin-empty">Błąd połączenia z backendem.<br>' + e.message + '</div>';
+  }
+}
+
+function renderAdminList() {
+  const list = document.getElementById('response-list');
+  if (!adminItems.length) {
+    list.innerHTML = '<div class="admin-empty">📭<br>Brak wypełnień</div>';
+    return;
+  }
+  list.innerHTML = adminItems.map(item => {
+    const date = item.ts ? new Date(item.ts).toLocaleString('pl-PL') : (item.created || '—');
+    const checked = selected.has(item.id) ? 'checked' : '';
+    return `
+    <div class="response-item" id="ri_${item.id}">
+      <div class="response-item-check ${checked}" onclick="toggleSelect(${item.id})">
+        ${selected.has(item.id) ? '✓' : ''}
+      </div>
+      <div class="response-item-info">
+        <div class="response-item-id">#${String(item.id).padStart(4,'0')}</div>
+        <div class="response-item-ts">${date}</div>
+      </div>
+      <div class="response-item-actions">
+        <button class="export-btn" style="padding:7px 12px;font-size:10px" onclick="downloadOne(${item.id})">⬇ .docx</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleSelect(id) {
+  if (selected.has(id)) selected.delete(id);
+  else selected.add(id);
+  // update just that item's checkbox
+  const el = document.querySelector(`#ri_${id} .response-item-check`);
+  if (el) {
+    el.classList.toggle('checked', selected.has(id));
+    el.textContent = selected.has(id) ? '✓' : '';
+  }
+  updateSelBar();
+}
+
+function toggleSelectAll() {
+  if (selected.size === adminItems.length) {
+    selected.clear();
+    document.getElementById('sel-all-btn').textContent = 'Zaznacz wszystkie';
+  } else {
+    adminItems.forEach(i => selected.add(i.id));
+    document.getElementById('sel-all-btn').textContent = 'Odznacz wszystkie';
+  }
+  renderAdminList();
+  updateSelBar();
+}
+
+function updateSelBar() {
+  const bar = document.getElementById('sel-bar');
+  document.getElementById('sel-count').textContent = selected.size + ' zaznaczonych';
+  bar.classList.toggle('visible', selected.size > 0);
+}
+
+async function downloadOne(id) {
+  triggerDownload(BACKEND_URL + `/api/export?id=${id}`);
+}
+
+async function downloadSelected() {
+  if (!selected.size) return;
+  triggerDownload(BACKEND_URL + `/api/export?ids=${[...selected].join(',')}`);
+}
+
+async function downloadAll() {
+  triggerDownload(BACKEND_URL + '/api/export');
+}
+
+function triggerDownload(url) {
+  // Create invisible link and click it — browser handles the download
+  const a = document.createElement('a');
+  a.href = url;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => a.remove(), 1000);
+}
+
+renderForm();
+  showScreen('screen-form');
+  document.getElementById('form-scroll').scrollTop = 0;
+}
+
+// ════════════════════════════════════════════════════════
+//  STATS
+// ════════════════════════════════════════════════════════
+
+function showStats() {
+  renderStats();
+  showScreen('screen-stats');
+}
+function showForm() { showScreen('screen-form'); }
+
+function renderStats() {
+  const el = document.getElementById('stats-scroll');
+  const n = responses.length;
+
+  let html = `
+    <div class="stats-grid">
+      <div class="stat-pill"><div class="stat-pill-num">${n}</div><div class="stat-pill-label">Wypełnień</div></div>
+      <div class="stat-pill"><div class="stat-pill-num">${QUESTIONS.filter(q=>q.type!=='section').length}</div><div class="stat-pill-label">Pytań</div></div>
+    </div>
+  `;
+
+  QUESTIONS.forEach(q => {
+    if (q.type === 'section') {
+      html += `<div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin:20px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)">${q.text}</div>`;
+      return;
+    }
+
+    html += `<div class="stat-section"><div class="stat-q-text">${q.text}</div>`;
+
+    if (q.type === 'text' || q.type === 'number') {
+      const vals = responses.map(r => r.answers[q.key]).filter(v => v !== undefined && v !== '');
+      if (!vals.length) {
+        html += `<div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">Brak odpowiedzi</div>`;
+      } else {
+        html += `<div class="text-answers">`;
+        vals.slice(-6).forEach(t => { html += `<div class="text-answer-item">${t}</div>`; });
+        if (vals.length > 6) html += `<div class="text-answer-item" style="color:var(--muted)">...i ${vals.length-6} więcej</div>`;
+        html += `</div>`;
+      }
+    } else {
+      const opts = q.type === 'yesno' ? ['TAK','NIE'] : (q.options || []);
+      const counts = {};
+      opts.forEach(o => counts[o] = 0);
+      responses.forEach(r => {
+        const a = r.answers[q.key];
+        if (!a) return;
+        if (Array.isArray(a)) a.forEach(v => { if (counts[v] !== undefined) counts[v]++; });
+        else if (counts[a] !== undefined) counts[a]++;
+      });
+      const total = Object.values(counts).reduce((a,b)=>a+b,0);
+      opts.forEach(o => {
+        const pct = total ? Math.round(counts[o]/total*100) : 0;
+        html += `<div class="bar-row">
+          <div class="bar-label">${o.replace(/^\d+\.\d*\.?\s*/,'')}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%">
+            ${pct > 10 ? `<span class="bar-pct">${pct}%</span>` : ''}
+          </div></div>
+          <div class="bar-n">${counts[o]}</div>
+        </div>`;
+      });
+      html += `<div class="stat-footer">N = ${total}</div>`;
+    }
+    html += `</div>`;
+  });
+
+  html += `<div class="export-row">
+    <button class="export-btn" onclick="exportCSV()">⬇ CSV</button>
+    <button class="export-btn primary" onclick="exportPrint()">🖨 Drukuj</button>
+  </div>`;
+
+  el.innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════
+//  EXPORT
+// ════════════════════════════════════════════════════════
+
+function exportCSV() {
+  if (!responses.length) { toast('Brak danych'); return; }
+  const qs = QUESTIONS.filter(q => q.type !== 'section');
+  const headers = ['id','ts', ...qs.map(q => q.key)];
+  const rows = responses.map(r => [
+    r.id, new Date(r.ts).toLocaleString('pl-PL'),
+    ...qs.map(q => {
+      const a = r.answers[q.key];
+      if (a === undefined || a === '') return '';
+      return Array.isArray(a) ? a.join(' | ') : String(a);
+    })
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(';')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'kwestionariusz_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+function exportPrint() {
+  if (!responses.length) { toast('Brak danych'); return; }
+  const qs = QUESTIONS.filter(q => q.type !== 'section');
+  const style = `<style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,sans-serif;font-size:11px;color:#111;padding:20px}
+    h1{font-size:16px;margin-bottom:2px}
+    .meta{font-family:monospace;font-size:10px;color:#666;margin-bottom:20px}
+    .card{border:1px solid #ccc;padding:12px;margin-bottom:12px;page-break-inside:avoid}
+    .card-head{font-size:9px;font-family:monospace;color:#888;border-bottom:1px solid #eee;padding-bottom:6px;margin-bottom:8px}
+    .row{margin-bottom:6px}
+    .q{font-weight:bold;font-size:10px;color:#555;margin-bottom:1px}
+    .a{font-size:11px}
+    .sec{font-weight:bold;font-size:11px;margin:14px 0 4px;border-bottom:1px solid #999;padding-bottom:3px}
+  </style>`;
+
+  let body = `<h1>Kwestionariusz osoby w kryzysie bezdomności — rok badania: 2026</h1>
+    <div class="meta">Eksport: ${new Date().toLocaleString('pl-PL')} | Liczba wypełnień: ${responses.length}</div>`;
+
+  responses.forEach((r, ri) => {
+    body += `<div class="card"><div class="card-head">Wypełnienie #${ri+1} — ${new Date(r.ts).toLocaleString('pl-PL')}</div>`;
+    let lastSection = '';
+    QUESTIONS.forEach(q => {
+      if (q.type === 'section') { lastSection = q.text; return; }
+      const a = r.answers[q.key];
+      if (a === undefined || a === '') return;
+      body += `<div class="row"><div class="q">${q.text}</div><div class="a">${Array.isArray(a) ? a.join(', ') : a}</div></div>`;
+    });
+    body += `</div>`;
+  });
+
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><title>Kwestionariusz 2026</title>${style}</head><body>${body}</body></html>`);
+  win.document.close();
+  setTimeout(() => win.print(), 400);
+}
+
+// ════════════════════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════════════════════
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'screen-stats') document.getElementById('stats-scroll').scrollTop = 0;
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ════════════════════════════════════════════════════════
+//  BOOT
+// ════════════════════════════════════════════════════════
+
+renderForm();
+</script>
+</body>
+</html>

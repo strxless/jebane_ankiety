@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@libsql/client": "^0.6.0",
+    "@libsql/client": "0.6.2",
     "docx": "^8.5.0",
     "jszip": "^3.10.1"
   }

@@ -10,7 +10,7 @@ import {
 } from "docx";
 import JSZip from "jszip";
 
-export const config = { runtime: "nodejs20.x", maxDuration: 30 };
+export const config = { runtime: "nodejs", maxDuration: 30 };
 
 // ── CHECKBOX CHARS ───────────────────────────────────────────────────────────
 const TICK  = "\u2612"; // ☒

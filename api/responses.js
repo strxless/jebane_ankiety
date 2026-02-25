@@ -4,7 +4,7 @@
 
 import { getClient, initSchema } from "./_db.js";
 
-export const config = { runtime: "nodejs20.x" };
+export const config = { runtime: "nodejs" };
 
 export default async function handler(req, res) {
   // CORS — allow the frontend (same domain or localhost dev)

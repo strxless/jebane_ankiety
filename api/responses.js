@@ -26,6 +26,8 @@ export default async function handler(req, res) {
     if (req.method === "GET") {
       const full = req.query.full === "1" || req.query.full === "true";
       const rows = await sql("SELECT id, ext_id, ts, created, answers FROM responses ORDER BY id");
+      // TEMP: log first row raw
+      console.log('[DEBUG] first row:', JSON.stringify(rows[0]));
 
       const items = rows.map(r => {
         const base = {

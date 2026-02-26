@@ -1175,22 +1175,13 @@ function renderStatsFromData(allAnswers, items, total, isLocal = false) {
       const val = a[q.key];
       if (val === undefined || val === null || val === '') return;
       respondents++;
-
       if (Array.isArray(val)) {
         val.forEach(v => {
-          const match = opts.find(o =>
-            o === v ||
-            o.toLowerCase() === v.toLowerCase() ||
-            o.toLowerCase().replace(/\s/g,'') === v.toLowerCase().replace(/\s/g,'')
-          );
+          const match = opts.find(o => o.toLowerCase().trim() === v.toLowerCase().trim());
           if (match) counts[match]++;
         });
       } else {
-        const match = opts.find(o =>
-            o === v ||
-            o.toLowerCase() === v.toLowerCase() ||
-            o.toLowerCase().replace(/\s/g,'') === v.toLowerCase().replace(/\s/g,'')
-          );
+        const match = opts.find(o => o.toLowerCase().trim() === val.toLowerCase().trim());
         if (match) counts[match]++;
       }
     });

@@ -1,5 +1,4 @@
 // Direct Turso HTTP API — no @libsql/client, no migrations nonsense
-
 function getConfig() {
   const url   = process.env.TURSO_DB_URL;
   const token = process.env.TURSO_AUTH_TOKEN;
@@ -24,16 +23,41 @@ export async function sql(query, args = []) {
       ]
     }),
   });
+
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Turso error ${res.status}: ${text}`);
   }
+
   const data = await res.json();
-  const result = data.results?.[0];
-  if (result?.type === 'error') throw new Error(result.error?.message || 'SQL error');
-  const { cols = [], rows = [] } = result?.response?.result ?? {};
+
+  // Turso v2 pipeline: results is an array matching requests array
+  // First entry is the 'execute', second is 'close'
+  const execResult = data.results?.[0];
+
+  if (!execResult) throw new Error('No result from Turso');
+
+  // Each result has shape: { type: 'ok', response: { type: 'execute', result: { cols, rows } } }
+  // or { type: 'error', error: { message } }
+  if (execResult.type === 'error') {
+    throw new Error(execResult.error?.message || 'SQL error');
+  }
+
+  const resultPayload = execResult.response?.result;
+  if (!resultPayload) throw new Error('Unexpected Turso response shape: ' + JSON.stringify(execResult));
+
+  const cols = resultPayload.cols ?? [];
+  const rows = resultPayload.rows ?? [];
+
   return rows.map(row =>
-    Object.fromEntries(cols.map((c, i) => [c.name, row[i]?.value ?? null]))
+    Object.fromEntries(
+      cols.map((c, i) => {
+        const cell = row[i];
+        // Turso returns each cell as { type, value } — null type means SQL NULL
+        const val = (cell == null || cell.type === 'null') ? null : (cell.value ?? null);
+        return [c.name, val];
+      })
+    )
   );
 }
 

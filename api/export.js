@@ -26,11 +26,18 @@ function yn(answers, key) {
   return { t: v === 'TAK' ? TICK : EMPTY, n: v === 'NIE' ? TICK : EMPTY };
 }
 
+// Safely parse answers — accepts already-parsed object or JSON string
+function parseAnswers(raw) {
+  if (!raw) return {};
+  if (typeof raw === 'object') return raw;
+  try { return JSON.parse(raw); } catch { return {}; }
+}
+
 const FONT = "Arial";
 const SZ   = 16; // 8pt — keeps doc to 2 pages
 
 function run(text, { bold=false, sz=SZ, color=undefined } = {}) {
-  return new TextRun({ text, font: FONT, size: sz, bold, color });
+  return new TextRun({ text: String(text ?? ''), font: FONT, size: sz, bold, color });
 }
 function p(children, { align=AlignmentType.LEFT, spaceBefore=0, spaceAfter=0, line=200 } = {}) {
   const runs = Array.isArray(children) ? children : [run(children)];
@@ -57,7 +64,7 @@ function twoCol(leftChildren, rightChildren, lw=4500, rw=4500) {
 }
 
 function buildDoc(record) {
-  const a = record.answers || {};
+  const a = parseAnswers(record.answers);
   const W = 9600;
   const children = [];
 
@@ -130,16 +137,27 @@ function buildDoc(record) {
     new TableRow({ children: [cell(p([run("PYTANIA", { bold: true })]), { width: W, bg: "D9D9D9" })] }),
   ]}));
 
-  // P1 + P2
+  // P1 + P2 — FIX: actually render the age value
   const kBox = ck(a, 'p1_plec', '1.1. Kobieta'), mBox = ck(a, 'p1_plec', '1.2. Mężczyzna');
-  const wAge = a.p2_wiek_liczba || '......';
+  // *** FIX: wAge was defined but never inserted into the paragraph runs ***
+  const wAge = a.p2_wiek_liczba ? String(a.p2_wiek_liczba) : '......';
   const wD = ck(a, 'p2_wiek_typ', 'Wiek deklarowany'), wO = ck(a, 'p2_wiek_typ', 'Wiek oszacowany');
   const wKD = ck(a, 'p2_wiek_kategoria', 'Osoba dorosła (pow. 18 lat)'), wKDz = ck(a, 'p2_wiek_kategoria', 'Dziecko (0\u201317 lat)');
   const p1w = Math.floor(W/4);
   children.push(new Table({ width: { size: W, type: WidthType.DXA }, columnWidths: [p1w, W-p1w], rows: [
     twoCol(
       [p([run("1. Płeć:", { bold: true })]), p([run(`1.1. kobieta ${kBox}`)]), p([run(`1.2. mężczyzna ${mBox}`)])],
-      [p([run("2. Wiek: ", { bold: true }), run(`2.1. Wiek (liczba lat, może być szacowany w przypadku utrudnionego kontaktu)............`)]), p([run(`${wD} wiek deklarowany   ${wO} wiek oszacowany`)]), p([run(`${wKD} osoba dorosła (pow. 18 lat)   ${wKDz} dziecko (0\u201317 lat)`)])],
+      [
+        // *** FIX: insert wAge value inline, bold, after the label ***
+        p([
+          run("2. Wiek: ", { bold: true }),
+          run("2.1. Wiek (liczba lat): "),
+          run(wAge, { bold: true }),
+          run("  (może być szacowany w przypadku utrudnionego kontaktu)"),
+        ]),
+        p([run(`${wD} wiek deklarowany   ${wO} wiek oszacowany`)]),
+        p([run(`${wKD} osoba dorosła (pow. 18 lat)   ${wKDz} dziecko (0\u201317 lat)`)]),
+      ],
       p1w, W-p1w
     ),
   ]}));
@@ -271,7 +289,8 @@ export default async function handler(req, res) {
       const rows = await sql("SELECT * FROM responses WHERE id = ?", [Number(id)]);
       if (!rows.length) return res.status(404).json({ error: "Not found" });
       const r = rows[0];
-      const record = { id: r.id, ext_id: r.ext_id, ts: r.ts, created: r.created, answers: JSON.parse(r.answers) };
+      // *** FIX: answers comes back as a string from Turso — parseAnswers handles both cases ***
+      const record = { id: r.id, ext_id: r.ext_id, ts: r.ts, created: r.created, answers: r.answers };
       const doc = buildDoc(record);
       const buf = await Packer.toBuffer(doc);
       const ts = (record.ts || record.created || '').slice(0, 10);
@@ -294,7 +313,8 @@ export default async function handler(req, res) {
 
     const zip = new JSZip();
     for (const r of rows) {
-      const record = { id: r.id, ext_id: r.ext_id, ts: r.ts, created: r.created, answers: JSON.parse(r.answers) };
+      // *** FIX: pass answers as raw string; parseAnswers() inside buildDoc handles it ***
+      const record = { id: r.id, ext_id: r.ext_id, ts: r.ts, created: r.created, answers: r.answers };
       const doc = buildDoc(record);
       const buf = await Packer.toBuffer(doc);
       const ts = (record.ts || record.created || '').slice(0, 10);

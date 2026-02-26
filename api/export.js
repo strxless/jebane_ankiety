@@ -261,7 +261,6 @@ function buildDoc(record) {
 
   // FOOTER
   children.push(p([run("*Wzór kwestionariusza może ulec zmianie. W takim przypadku zostanie ona zakomunikowana w odpowiednim czasie przed badaniem.", { sz: 14 })]));
-  children.push(p([run(`Wygenerowano automatycznie | ID: ${record.id} | ${(record.ts||'').slice(0,10)}`, { sz: 12, color: "999999" })]));
 
   return new Document({
     sections: [{

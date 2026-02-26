@@ -17,10 +17,12 @@ const EMPTY = "\u2610";
 
 function ck(answers, key, value) {
   const a = answers[key];
-  if (Array.isArray(a)) return a.some(v => v.toLowerCase().startsWith(value.toLowerCase().split('.')[0]+'.') || v.toLowerCase() === value.toLowerCase()) ? TICK : EMPTY;
+  const eq = (x, y) => x.toLowerCase().trim() === y.toLowerCase().trim();
+  if (Array.isArray(a)) return a.some(v => eq(v, value)) ? TICK : EMPTY;
   if (!a) return EMPTY;
-  return (a.toLowerCase().startsWith(value.toLowerCase().split('.')[0]+'.') || a.toLowerCase() === value.toLowerCase()) ? TICK : EMPTY;
+  return eq(a, value) ? TICK : EMPTY;
 }
+
 function yn(answers, key) {
   const v = answers[key];
   return { t: v === 'TAK' ? TICK : EMPTY, n: v === 'NIE' ? TICK : EMPTY };

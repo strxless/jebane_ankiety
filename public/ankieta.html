@@ -1050,7 +1050,7 @@ function submitForm() {
 function startNext() { answers = {}; renderForm(); showScreen('screen-form'); document.getElementById('form-scroll').scrollTop = 0; }
 
 // ════════════════════════════════════════════════════════
-//  STATS SCREEN — LIVE FROM BACKEND
+//  STATS SCREEN — LIVE FROM BACKEND  (FIXED)
 // ════════════════════════════════════════════════════════
 
 async function showStatsScreen() {
@@ -1070,36 +1070,63 @@ async function loadStats() {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const data = await r.json();
     const items = data.items || [];
-    // parse answers from each item
+
+    // ── FIX: answers comes back as already-parsed object from the fixed
+    //         responses.js. But defensively handle both string and object.
     const allAnswers = items.map(item => {
-      try { return typeof item.answers === 'string' ? JSON.parse(item.answers) : (item.answers || {}); }
-      catch(e) { return {}; }
+      try {
+        return typeof item.answers === 'string'
+          ? JSON.parse(item.answers)
+          : (item.answers || {});
+      } catch(e) {
+        console.warn('[stats] Failed to parse answers for item', item.id, e);
+        return {};
+      }
     });
-    renderStatsFromData(allAnswers, items.length, data.total ?? items.length);
+
+    // ── FIX: age is stored in answers.p2_wiek_liczba, NOT on item itself.
+    //         The old code tried to read a.ts which is on the *item*, not answers.
+    //         Pass items separately so we can read item.ts for date counting.
+    renderStatsFromData(allAnswers, items, data.total ?? items.length, false);
+
   } catch(e) {
+    console.warn('[stats] Backend error:', e);
     scroll.innerHTML = `
       <div class="stats-error">
         <strong>Błąd połączenia z serwerem</strong><br>
-        Sprawdź czy API jest dostępne. Wyświetlam dane lokalne (${responses.length} rekordów).
+        ${e.message}. Wyświetlam dane lokalne (${responses.length} rekordów).
       </div>`;
-    // fall back to localStorage data
+    // Fall back to localStorage — responses[] items have { answers, ts } shape
     const allAnswers = responses.map(r => r.answers || {});
-    renderStatsFromData(allAnswers, responses.length, responses.length, true);
+    renderStatsFromData(allAnswers, responses, responses.length, true);
   } finally {
     btn.textContent = '↻ Odśwież';
     btn.disabled = false;
   }
 }
 
-function renderStatsFromData(allAnswers, count, total, isLocal = false) {
+// items: array of { id, ts, created, answers } — used only for ts/date counts
+// allAnswers: array of plain answer objects (already parsed)
+function renderStatsFromData(allAnswers, items, total, isLocal = false) {
   const scroll = document.getElementById('stats-scroll');
   document.getElementById('stats-resp-count').textContent =
     total + ' ' + plural(total, 'wypełnienie', 'wypełnienia', 'wypełnień');
 
-  // compute age stats if available
-  const ages = allAnswers.map(a => parseInt(a.p2_wiek_liczba)).filter(n => !isNaN(n) && n > 0);
-  const avgAge = ages.length ? Math.round(ages.reduce((s,n)=>s+n,0)/ages.length) : null;
-  const uniqueDates = new Set(allAnswers.map(a => (a.ts||'').slice(0,10)).filter(Boolean)).size;
+  // ── FIX: age is in answers.p2_wiek_liczba (number field), read from allAnswers
+  const ages = allAnswers
+    .map(a => parseInt(a['p2_wiek_liczba']))
+    .filter(n => !isNaN(n) && n > 0 && n < 120);
+
+  const avgAge = ages.length
+    ? Math.round(ages.reduce((s, n) => s + n, 0) / ages.length)
+    : null;
+
+  // ── FIX: unique dates come from items[].ts, not answers.ts
+  const uniqueDates = new Set(
+    items
+      .map(item => (item.ts || item.created || '').slice(0, 10))
+      .filter(Boolean)
+  ).size;
 
   let html = '';
 
@@ -1114,7 +1141,7 @@ function renderStatsFromData(allAnswers, count, total, isLocal = false) {
       <div class="stat-pill-label">Śr. wiek</div>
     </div>
     <div class="stat-pill">
-      <div class="stat-pill-num">${ages.length ? Math.min(...ages)+'–'+Math.max(...ages) : '—'}</div>
+      <div class="stat-pill-num">${ages.length ? Math.min(...ages) + '–' + Math.max(...ages) : '—'}</div>
       <div class="stat-pill-label">Wiek min–max</div>
     </div>
   </div>`;
@@ -1123,7 +1150,7 @@ function renderStatsFromData(allAnswers, count, total, isLocal = false) {
     html += `<div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:14px;padding:8px 12px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--line)">⚠ dane lokalne — brak połączenia z serwerem</div>`;
   }
 
-  if (!count) {
+  if (!total) {
     html += `<div class="stats-empty">Brak danych do wyświetlenia</div>`;
     scroll.innerHTML = html;
     return;
@@ -1136,11 +1163,10 @@ function renderStatsFromData(allAnswers, count, total, isLocal = false) {
       html += `<div class="stats-section-hdr">${q.text}</div>`;
       return;
     }
-    if (q.type === 'text') return; // skip free-text
+    if (q.type === 'text') return;  // skip free-text
     qIndex++;
 
-    // collect counts
-    const opts = q.type === 'yesno' ? ['TAK','NIE'] : (q.options || []);
+    const opts = q.type === 'yesno' ? ['TAK', 'NIE'] : (q.options || []);
     const counts = {};
     opts.forEach(o => counts[o] = 0);
     let respondents = 0;
@@ -1149,24 +1175,29 @@ function renderStatsFromData(allAnswers, count, total, isLocal = false) {
       const val = a[q.key];
       if (val === undefined || val === null || val === '') return;
       respondents++;
+
       if (Array.isArray(val)) {
         val.forEach(v => {
-          // fuzzy match — find closest option
-          const match = opts.find(o => o === v || o.toLowerCase().startsWith(v.toLowerCase().split('.')[0]+'.') || v.toLowerCase().startsWith(o.toLowerCase().split('.')[0]+'.'));
+          const match = opts.find(o =>
+            o === v ||
+            o.toLowerCase() === v.toLowerCase() ||
+            o.toLowerCase().replace(/\s/g,'') === v.toLowerCase().replace(/\s/g,'')
+          );
           if (match) counts[match]++;
-          else if (counts[v] !== undefined) counts[v]++;
         });
       } else {
-        const match = opts.find(o => o === val || o.toLowerCase() === val.toLowerCase() || o.toLowerCase().startsWith(val.toLowerCase().split('.')[0]+'.') || val.toLowerCase().startsWith(o.toLowerCase().split('.')[0]+'.'));
+        const match = opts.find(o =>
+            o === v ||
+            o.toLowerCase() === v.toLowerCase() ||
+            o.toLowerCase().replace(/\s/g,'') === v.toLowerCase().replace(/\s/g,'')
+          );
         if (match) counts[match]++;
-        else if (counts[val] !== undefined) counts[val]++;
       }
     });
 
-    const totalVotes = Object.values(counts).reduce((s,n)=>s+n,0);
+    const totalVotes = Object.values(counts).reduce((s, n) => s + n, 0);
     const maxCount = Math.max(...Object.values(counts));
 
-    // skip if no data at all
     if (totalVotes === 0 && respondents === 0) {
       html += `<div class="stat-card">
         <div class="stat-card-head">
@@ -1190,13 +1221,13 @@ function renderStatsFromData(allAnswers, count, total, isLocal = false) {
       const base = (q.type === 'checkbox') ? respondents : totalVotes;
       const pct = base > 0 ? Math.round(n / base * 100) : 0;
       const isWinner = n === maxCount && n > 0;
-      const label = o.replace(/^\d+[\.\d]*\s*/, ''); // strip leading number prefix
+      const label = o.replace(/^\d+[\.\d]*\s*/, '');
       const displayLabel = label || o;
 
       html += `<div class="bar-row${isWinner ? ' winner' : ''}">
         <div class="bar-label" title="${o}">${displayLabel}</div>
         <div class="bar-track">
-          <div class="bar-fill${n===0?' zero':''}" style="width:${pct}%">
+          <div class="bar-fill${n === 0 ? ' zero' : ''}" style="width:${pct}%">
             ${pct >= 12 ? `<span class="bar-pct">${pct}%</span>` : ''}
           </div>
         </div>
@@ -1205,7 +1236,6 @@ function renderStatsFromData(allAnswers, count, total, isLocal = false) {
     });
 
     html += `</div>`;
-
     const footerNote = q.type === 'checkbox'
       ? `${respondents} respondentów · wielokrotny wybór`
       : `N = ${totalVotes}`;
@@ -1213,10 +1243,8 @@ function renderStatsFromData(allAnswers, count, total, isLocal = false) {
   });
 
   html += `<div class="stats-last-updated">Ostatnia aktualizacja: ${new Date().toLocaleTimeString('pl-PL')}</div>`;
-
   scroll.innerHTML = html;
 }
-
 // ════════════════════════════════════════════════════════
 //  ADMIN — DOWNLOAD PANEL
 // ════════════════════════════════════════════════════════

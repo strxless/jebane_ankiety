@@ -1,10 +1,17 @@
 // api/responses.js
-// POST  → save new response
-// GET   → list all responses (for admin panel)
+// GET /api/responses          → { total, items: [{id, ts, created}] }  (no answers)
+// GET /api/responses?full=1   → { total, items: [{id, ts, created, answers: {...}}] }
+// POST /api/responses         → saves new response, returns { ok, db_id }
 
 import { sql, initSchema } from "./_db.js";
 
-export const config = { runtime: "nodejs" };
+export const config = { runtime: "nodejs", maxDuration: 15 };
+
+function safeParseAnswers(raw) {
+  if (!raw) return {};
+  if (typeof raw === "object") return raw;
+  try { return JSON.parse(raw); } catch { return {}; }
+}
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -15,40 +22,60 @@ export default async function handler(req, res) {
   try {
     await initSchema();
 
-    // ── GET /api/responses ──────────────────────────────────
+    // ── GET ─────────────────────────────────────────────
     if (req.method === "GET") {
-      const rows = await sql(
-        "SELECT id, ext_id, ts, created FROM responses ORDER BY id DESC"
-      );
-      return res.status(200).json({
-        total: rows.length,
-        items: rows.map(r => ({
-          id:      r.id,
-          ext_id:  r.ext_id,
-          ts:      r.ts,
-          created: r.created,
-        }))
+      const full = req.query.full === "1" || req.query.full === "true";
+      const rows = await sql("SELECT id, ext_id, ts, created, answers FROM responses ORDER BY id");
+
+      const items = rows.map(r => {
+        const base = {
+          id: r.id,
+          ext_id: r.ext_id,
+          ts: r.ts || r.created || null,
+          created: r.created || null,
+        };
+        if (full) {
+          // Always return answers as a parsed object so the frontend
+          // doesn't need to double-parse or guess the type
+          base.answers = safeParseAnswers(r.answers);
+        }
+        return base;
       });
+
+      return res.status(200).json({ total: items.length, items });
     }
 
-    // ── POST /api/responses ─────────────────────────────────
+    // ── POST ────────────────────────────────────────────
     if (req.method === "POST") {
-      const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-      const { id: ext_id, ts, answers } = body;
-      if (!answers) return res.status(400).json({ error: "answers required" });
+      let body = req.body;
+      // In some Vercel configs body may arrive as a string
+      if (typeof body === "string") {
+        try { body = JSON.parse(body); } catch { return res.status(400).json({ error: "Invalid JSON" }); }
+      }
+
+      const answers = body.answers || {};
+      const ts      = body.ts || new Date().toISOString();
+      const ext_id  = body.id ? String(body.id) : null;
+
+      // Always store answers as a JSON string
+      const answersStr = typeof answers === "string" ? answers : JSON.stringify(answers);
 
       await sql(
         "INSERT INTO responses (ext_id, ts, answers) VALUES (?, ?, ?)",
-        [String(ext_id ?? ""), ts ?? new Date().toISOString(), JSON.stringify(answers)]
+        [ext_id, ts, answersStr]
       );
 
-      return res.status(201).json({ ok: true });
+      // Get the inserted id
+      const lastRow = await sql("SELECT last_insert_rowid() as id");
+      const db_id = lastRow[0]?.id ?? null;
+
+      return res.status(200).json({ ok: true, db_id });
     }
 
     return res.status(405).json({ error: "Method not allowed" });
 
   } catch (err) {
-    console.error(err);
+    console.error("[responses] error:", err);
     return res.status(500).json({ error: err.message });
   }
 }
